@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="miksys_asm" _name="MIKSYS ASM" version="2.0" _section="Scripts">
+  <metadata>
+    <property name="globs">*.miksys.S</property>
+    <property name="line-comment-start">//</property>
+  </metadata>
+  <styles>
+    <style id="command" _name="Command" map-to="def:keyword"/>
+    <style id="register" _name="Register" map-to="def:type"/>
+    <style id="mlink" _name="Link" map-to="def:shebang"/>
+  </styles>
+
+  <definitions>
+    <context id="command" style-ref="command">
+        <keyword>NOP</keyword>
+        <keyword>(IN|OUT)S?</keyword>
+        <keyword>(J|CALL|RET|DJ|DCALL|DRET|CMOV|CCMOV|SHL|SHR|MUL|SMUL|WMUL|READ|WRITE|CMP|TST|RGBADD|RGBSHR)(AL|EQ|NE|CS|CC|MI|PL|VS|VC|HI|LS|GE|LT|GT|LE)?</keyword>
+        <keyword>(OR|XOR|AND|MOV|ADD|RSB|SUB|ADC|RSC|SBC)(AL|EQ|NE|CS|CC|MI|PL|VS|VC|HI|LS|GE|LT|GT|LE)?S?</keyword>
+    </context>
+    <context id="register" style-ref="register">
+        <keyword>r[0-9]|r1[0-5]</keyword>
+        <keyword>IN_FLAGS</keyword>
+        <keyword>MEM_ADDR_LO</keyword>
+        <keyword>MEM_ADDR_HI</keyword>
+        <keyword>IN_CLOCK</keyword>
+        <keyword>IN_TIME_MS4</keyword>
+        <keyword>MUL_RESULT_LO</keyword>
+        <keyword>MUL_RESULT_HI</keyword>
+        <keyword>SHIFT_RESULT</keyword>
+        <keyword>FP_RESULT</keyword>
+        <keyword>OUT_LEDS</keyword>
+    </context>
+    <context id="mlink" style-ref="mlink">
+        <match>^\S+:</match>
+    </context>
+    <context id="keyword" style-ref="def:identifier">
+        <keyword>LO|HI|NOT</keyword>
+        <keyword>DEV_SERIAL|DEV_VGA|DEV_SDRAM|DEV_SOUND|DEV_PS2_0|DEV_PS2_1|DEV_USB</keyword>
+        <keyword>N_FLAG|Z_FLAG|C_FLAG|V_FLAG|SOFTKEY_FLAG|MEM_FLAG</keyword>
+        <keyword>code|data|virtual|ascii|const|words|macro|endmacro</keyword>
+        <keyword>CONVERT|FADD|FSUB|FMUL|FDIV|FLOOR|FIXED</keyword>
+    </context>
+    <context id="ram" style-ref="command">
+        <match>(\]|\[\s*ALL\s+|\[)</match>
+    </context>
+    <context id="miksys_asm" class="no-spell-check">
+      <include>
+        <context ref="def:c-like-comment"/>
+        <context ref="def:c-like-comment-multiline"/>
+        <context ref="def:c-like-close-comment-outside-comment"/>
+        <context ref="c:preprocessor"/>
+        <context ref="c:include"/>
+        <context ref="c:string"/>
+        <context ref="c:hexadecimal"/>
+        <context ref="c:decimal"/>
+        <context ref="c:char"/>
+        <context ref="c:float"/>
+        <context ref="command"/>
+        <context ref="register"/>
+        <context ref="mlink"/>
+        <context ref="ram"/>
+        <context ref="keyword"/>
+      </include>
+    </context>
+  </definitions>
+</language>
+

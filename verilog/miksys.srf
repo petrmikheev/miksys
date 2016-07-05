@@ -1,0 +1,13 @@
+{ "" "" "" "Verilog HDL warning at sdr.v(968): extended using \"x\" or \"z\"" {  } {  } 0 10273 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Verilog HDL warning at sdr.v(971): extended using \"x\" or \"z\"" {  } {  } 0 10273 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 20028 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 10268 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 292013 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 13024 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 15714 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "\"lo_regs\" assigned a value but never read" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "\"mult_res\" assigned a value but never read" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Output port \"hi_regs_out\"" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "\"shift_res\" assigned a value but never read" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "div_res\" assigned" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "mod_res\" assigned" {  } {  } 0 9999 "" 0 0 "Quartus II" 0 -1 0 ""}

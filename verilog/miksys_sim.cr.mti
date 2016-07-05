@@ -1,0 +1,104 @@
+/home/petya/archive/altera/projects/miksys/PLL1_syn.v {1 {vlog -work work /home/petya/archive/altera/projects/miksys/PLL1_syn.v
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling module PLL1_altpll
+-- Compiling module PLL1
+
+Top level modules:
+	PLL1
+
+} {} {}} /home/petya/archive/altera/projects/miksys/system_top.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/system_top.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface bus_interface
+-- Compiling interface VGA_INTERFACE
+-- Compiling interface SDRAM_INTERFACE
+-- Compiling interface FTDI_INTERFACE
+-- Compiling module system_top
+
+Top level modules:
+	system_top
+
+} {} {}} /home/petya/archive/altera/projects/miksys/hardware_interfaces.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/hardware_interfaces.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface VGA_INTERFACE
+-- Compiling interface SDRAM_INTERFACE
+-- Compiling interface FTDI_INTERFACE
+
+Top level modules:
+	--none--
+
+} {} {}} /home/petya/archive/altera/projects/miksys/PLL1_bb.v {1 {vlog -work work /home/petya/archive/altera/projects/miksys/PLL1_bb.v
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling module PLL1
+
+Top level modules:
+	PLL1
+
+} {} {}} /home/petya/archive/altera/projects/miksys/bus_interface.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/bus_interface.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface bus_interface
+
+Top level modules:
+	--none--
+
+} {} {}} /home/petya/archive/altera/projects/miksys/resource_manager.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/resource_manager.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface bus_interface
+-- Compiling module resource_manager
+
+Top level modules:
+	resource_manager
+
+} {} {}} /home/petya/archive/altera/projects/miksys/sdram_controller.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/sdram_controller.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface bus_interface
+-- Compiling interface VGA_INTERFACE
+-- Compiling interface SDRAM_INTERFACE
+-- Compiling interface FTDI_INTERFACE
+-- Compiling module sdram_controller
+
+Top level modules:
+	sdram_controller
+
+} {} {}} /home/petya/archive/altera/projects/miksys/serial_controller.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/serial_controller.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface VGA_INTERFACE
+-- Compiling interface SDRAM_INTERFACE
+-- Compiling interface FTDI_INTERFACE
+-- Compiling module serial_controller
+
+Top level modules:
+	serial_controller
+
+} {} {}} /home/petya/archive/altera/projects/miksys/PLL1.v {1 {vlog -work work /home/petya/archive/altera/projects/miksys/PLL1.v
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling module PLL1
+
+Top level modules:
+	PLL1
+
+} {} {}} /home/petya/archive/altera/projects/miksys/RAM512x16_1R1W_bb.v {1 {vlog -work work /home/petya/archive/altera/projects/miksys/RAM512x16_1R1W_bb.v
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling module RAM512x16_1R1W
+
+Top level modules:
+	RAM512x16_1R1W
+
+} {} {}} /home/petya/archive/altera/projects/miksys/vga_controller.sv {1 {vlog -work work -sv /home/petya/archive/altera/projects/miksys/vga_controller.sv
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling interface bus_interface
+-- Compiling interface VGA_INTERFACE
+-- Compiling interface SDRAM_INTERFACE
+-- Compiling interface FTDI_INTERFACE
+-- Compiling module vga_controller
+
+Top level modules:
+	vga_controller
+
+} {} {}} /home/petya/archive/altera/projects/miksys/RAM512x16_1R1W.v {1 {vlog -work work /home/petya/archive/altera/projects/miksys/RAM512x16_1R1W.v
+Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+-- Compiling module RAM512x16_1R1W
+
+Top level modules:
+	RAM512x16_1R1W
+
+} {} {}}

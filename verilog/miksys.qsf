@@ -1,0 +1,275 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 32-bit
+# Version 13.1.0 Build 162 10/23/2013 SJ Web Edition
+# Date created = 13:15:50  April 10, 2015
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		miksys_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone III"
+set_global_assignment -name DEVICE EP3C10E144C8
+set_global_assignment -name TOP_LEVEL_ENTITY system_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:15:50  APRIL 10, 2015"
+set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (SystemVerilog)"
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "SYSTEMVERILOG HDL" -section_id eda_simulation
+
+set_location_assignment PIN_24 -to I_FTDI.BD0
+set_location_assignment PIN_28 -to I_FTDI.BD1
+set_location_assignment PIN_11 -to I_FTDI.BD2
+set_location_assignment PIN_10 -to I_FTDI.BD3
+
+set_location_assignment PIN_25 -to CLK100MHZ
+set_location_assignment PIN_23 -to KEY0
+set_location_assignment PIN_22 -to KEY1
+
+set_location_assignment PIN_30 -to I_SDRAM.DQ[15]
+set_location_assignment PIN_31 -to I_SDRAM.DQ[14]
+set_location_assignment PIN_32 -to I_SDRAM.DQ[13]
+set_location_assignment PIN_33 -to I_SDRAM.DQ[12]
+set_location_assignment PIN_34 -to I_SDRAM.DQ[11]
+set_location_assignment PIN_38 -to I_SDRAM.DQ[10]
+set_location_assignment PIN_39 -to I_SDRAM.DQ[9]
+set_location_assignment PIN_42 -to I_SDRAM.DQ[8]
+
+set_location_assignment PIN_71 -to I_SDRAM.DQ[7]
+set_location_assignment PIN_72 -to I_SDRAM.DQ[6]
+set_location_assignment PIN_73 -to I_SDRAM.DQ[5]
+set_location_assignment PIN_74 -to I_SDRAM.DQ[4]
+set_location_assignment PIN_75 -to I_SDRAM.DQ[3]
+set_location_assignment PIN_76 -to I_SDRAM.DQ[2]
+set_location_assignment PIN_77 -to I_SDRAM.DQ[1]
+set_location_assignment PIN_80 -to I_SDRAM.DQ[0]
+
+set_location_assignment PIN_60 -to I_SDRAM.A[0]
+set_location_assignment PIN_64 -to I_SDRAM.A[1]
+set_location_assignment PIN_65 -to I_SDRAM.A[2]
+set_location_assignment PIN_66 -to I_SDRAM.A[3]
+set_location_assignment PIN_46 -to I_SDRAM.A[4]
+set_location_assignment PIN_49 -to I_SDRAM.A[5]
+set_location_assignment PIN_50 -to I_SDRAM.A[6]
+set_location_assignment PIN_51 -to I_SDRAM.A[7]
+set_location_assignment PIN_52 -to I_SDRAM.A[8]
+set_location_assignment PIN_53 -to I_SDRAM.A[9]
+set_location_assignment PIN_59 -to I_SDRAM.A[10]
+set_location_assignment PIN_54 -to I_SDRAM.A[11]
+
+set_location_assignment PIN_70 -to I_SDRAM.LDQM
+set_location_assignment PIN_43 -to I_SDRAM.UDQM
+
+set_location_assignment PIN_55 -to I_SDRAM.BA0
+set_location_assignment PIN_58 -to I_SDRAM.BA1
+
+set_location_assignment PIN_67 -to I_SDRAM.RAS
+set_location_assignment PIN_68 -to I_SDRAM.CAS
+set_location_assignment PIN_69 -to I_SDRAM.WE
+set_location_assignment PIN_44 -to I_SDRAM.CLK
+
+set_location_assignment PIN_79 -to LED[3]
+set_location_assignment PIN_83 -to LED[2]
+set_location_assignment PIN_84 -to LED[1]
+set_location_assignment PIN_85 -to LED[0]
+
+set_location_assignment PIN_144 -to I_VGA.RED[4]
+set_location_assignment PIN_1 -to I_VGA.RED[3]
+set_location_assignment PIN_2 -to I_VGA.RED[2]
+set_location_assignment PIN_3 -to I_VGA.RED[1]
+set_location_assignment PIN_7 -to I_VGA.RED[0]
+set_location_assignment PIN_136 -to I_VGA.GREEN[5]
+set_location_assignment PIN_137 -to I_VGA.GREEN[4]
+set_location_assignment PIN_138 -to I_VGA.GREEN[3]
+set_location_assignment PIN_141 -to I_VGA.GREEN[2]
+set_location_assignment PIN_142 -to I_VGA.GREEN[1]
+set_location_assignment PIN_143 -to I_VGA.GREEN[0]
+set_location_assignment PIN_128 -to I_VGA.BLUE[4]
+set_location_assignment PIN_129 -to I_VGA.BLUE[3]
+set_location_assignment PIN_132 -to I_VGA.BLUE[2]
+set_location_assignment PIN_133 -to I_VGA.BLUE[1]
+set_location_assignment PIN_135 -to I_VGA.BLUE[0]
+set_location_assignment PIN_127 -to I_VGA.HSYNC
+set_location_assignment PIN_126 -to I_VGA.VSYNC
+
+set_location_assignment PIN_100 -to ADC_D[0]
+set_location_assignment PIN_99 -to ADC_D[1]
+set_location_assignment PIN_98 -to ADC_D[2]
+set_location_assignment PIN_91 -to ADC_D[3]
+set_location_assignment PIN_90 -to ADC_D[4]
+set_location_assignment PIN_89 -to ADC_D[5]
+set_location_assignment PIN_88 -to ADC_D[6]
+set_location_assignment PIN_87 -to ADC_D[7]
+set_location_assignment PIN_86 -to ADC_CLK
+
+set_location_assignment PIN_101 -to IO[0]
+set_location_assignment PIN_103 -to IO[1]
+set_location_assignment PIN_104 -to IO[2]
+set_location_assignment PIN_105 -to IO[3]
+set_location_assignment PIN_106 -to IO[4]
+set_location_assignment PIN_110 -to IO[5]
+set_location_assignment PIN_111 -to IO[6]
+set_location_assignment PIN_112 -to IO[7]
+
+set_location_assignment PIN_113 -to IO[8]
+set_location_assignment PIN_114 -to IO[9]
+set_location_assignment PIN_115 -to IO[10]
+set_location_assignment PIN_119 -to IO[11]
+set_location_assignment PIN_120 -to IO[12]
+set_location_assignment PIN_121 -to IO[13]
+set_location_assignment PIN_124 -to IO[14]
+set_location_assignment PIN_125 -to IO[15]
+
+set_location_assignment PIN_12 -to DCLK
+set_location_assignment PIN_13 -to DATA0
+set_location_assignment PIN_8 -to NCSO
+set_location_assignment PIN_6 -to ASDO
+
+
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_WEAK_PULLUP "AS INPUT TRI-STATED"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name ENABLE_DRC_SETTINGS OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH test_bench -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME test_bench -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id test_bench
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME test_bench -section_id test_bench
+set_global_assignment -name SMART_RECOMPILE ON
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE BALANCED
+set_global_assignment -name AUTO_PACKED_REGISTERS_STRATIXII NORMAL
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name FLOW_ENABLE_RTL_VIEWER OFF
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
+set_global_assignment -name REMOVE_REDUNDANT_LOGIC_CELLS ON
+set_global_assignment -name PRE_MAPPING_RESYNTHESIS ON
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name ECO_OPTIMIZE_TIMING ON
+set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
+set_global_assignment -name EDA_TEST_BENCH_FILE test_bench.sv -section_id test_bench
+set_global_assignment -name EDA_TEST_BENCH_FILE sdr.v -section_id test_bench
+set_global_assignment -name EDA_TEST_BENCH_FILE sdr_module.v -section_id test_bench
+set_global_assignment -name AUTO_GLOBAL_CLOCK ON
+set_global_assignment -name FORCE_FITTER_TO_AVOID_PERIPHERY_PLACEMENT_WARNINGS OFF
+set_global_assignment -name SYSTEMVERILOG_FILE slowIO_buffer.sv
+set_global_assignment -name VERILOG_INCLUDE_FILE sdr_parameters.vh
+set_global_assignment -name VERILOG_FILE sdr_module.v
+set_global_assignment -name VERILOG_FILE sdr.v
+set_global_assignment -name SYSTEMVERILOG_FILE bus_interfaces.sv
+set_global_assignment -name SYSTEMVERILOG_FILE memory_multiplexer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE hardware_interfaces.sv
+set_global_assignment -name QIP_FILE PLL1.qip
+set_global_assignment -name SYSTEMVERILOG_FILE system_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE sdram_controller.sv
+set_global_assignment -name SDC_FILE miksys.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE vga_controller.sv
+set_global_assignment -name QIP_FILE RAM512x16_1R1W.qip
+set_global_assignment -name SYSTEMVERILOG_FILE serial_controller.sv
+set_global_assignment -name SYSTEMVERILOG_FILE test_bench.sv
+set_global_assignment -name SYSTEMVERILOG_FILE core.sv
+set_global_assignment -name QIP_FILE RAM512x16_2RW.qip
+set_global_assignment -name QIP_FILE CHARMAP.qip
+set_global_assignment -name SYSTEMVERILOG_FILE cache.sv
+set_global_assignment -name QIP_FILE RAM8192x32_2RW.qip
+set_global_assignment -name SYSTEMVERILOG_FILE memory_to_cache_connector.sv
+set_global_assignment -name SYSTEMVERILOG_FILE command_cache.sv
+set_global_assignment -name QIP_FILE STARTUP.qip
+set_global_assignment -name QIP_FILE MULT.qip
+set_global_assignment -name SYSTEMVERILOG_FILE PU.sv
+set_global_assignment -name SYSTEMVERILOG_FILE opcodes.sv
+set_global_assignment -name QIP_FILE RAM4096x64_2RW.qip
+set_global_assignment -name SYSTEMVERILOG_FILE CU.sv
+set_global_assignment -name QIP_FILE SHIFT.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FPU.sv
+set_global_assignment -name QIP_FILE FP_ADD_SUB.qip
+set_global_assignment -name QIP_FILE FP_MUL.qip
+set_global_assignment -name QIP_FILE FP_I2FP.qip
+set_global_assignment -name QIP_FILE FP_FP2I.qip
+set_global_assignment -name QIP_FILE FP_DIV.qip
+set_global_assignment -name QIP_FILE FP_SQRT.qip
+set_global_assignment -name QIP_FILE DIVMOD.qip
+set_global_assignment -name QIP_FILE COMMAND_PAGE.qip
+set_global_assignment -name QIP_FILE COMMAND_RAM.qip
+set_global_assignment -name SYSTEMVERILOG_FILE ps2_controller.sv
+set_global_assignment -name SYSTEMVERILOG_FILE peripheral_multiplexer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE direct_io.sv
+set_global_assignment -name SYSTEMVERILOG_FILE usb_controller.sv
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[4]
+set_global_assignment -name AUTO_RESOURCE_SHARING ON
+set_global_assignment -name SYSTEMVERILOG_FILE timer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE test_bench_ps2.sv
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to I_VGA.VSYNC
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to I_VGA.HSYNC
+set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 1
+set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 1
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
