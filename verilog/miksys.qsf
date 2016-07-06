@@ -234,14 +234,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE opcodes.sv
 set_global_assignment -name QIP_FILE RAM4096x64_2RW.qip
 set_global_assignment -name SYSTEMVERILOG_FILE CU.sv
 set_global_assignment -name QIP_FILE SHIFT.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FPU.sv
-set_global_assignment -name QIP_FILE FP_ADD_SUB.qip
-set_global_assignment -name QIP_FILE FP_MUL.qip
-set_global_assignment -name QIP_FILE FP_I2FP.qip
-set_global_assignment -name QIP_FILE FP_FP2I.qip
-set_global_assignment -name QIP_FILE FP_DIV.qip
-set_global_assignment -name QIP_FILE FP_SQRT.qip
-set_global_assignment -name QIP_FILE DIVMOD.qip
 set_global_assignment -name QIP_FILE COMMAND_PAGE.qip
 set_global_assignment -name QIP_FILE COMMAND_RAM.qip
 set_global_assignment -name SYSTEMVERILOG_FILE ps2_controller.sv
