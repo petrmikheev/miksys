@@ -52,7 +52,7 @@ write_epcs4_part1.svf, write_epcs4_part2.svf -- для записи в микр�
     /dev/sdb1          264192    15633407     7684608   83  Linux
     /dev/sdb2            2048      264191      131072   83  Linux
 
-В этом случае запись на флешку осуществляется (linux) командой `sudo dd if=miksys_soft/demo3d/demo3d.usb_packed of=\dev\sdb2`
+В этом случае запись на флешку осуществляется (linux) командой `sudo dd if=miksys_soft/demo3d/demo3d.usb_packed of=/dev/sdb2`
 
 # Недоработки:
 
