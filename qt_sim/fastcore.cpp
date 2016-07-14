@@ -36,9 +36,13 @@ enum opcodes {
 FastCore::FastCore(MIKSYS* system, char* filename) {
     this->system = system;
     FILE* p = fopen(filename, "rb");
-    int c = fread(prog, 4, PROG_SIZE, p);
-    printf("Commands count: %d\n", c);
-    fclose(p);
+    if (p) {
+        int c = fread(prog, 4, PROG_SIZE, p);
+        printf("Commands count: %d\n", c);
+        fclose(p);
+    } else {
+        printf("warning: can't open '%s'\n", filename);
+    }
     reset();
 }
 
