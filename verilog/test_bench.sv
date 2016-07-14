@@ -2,7 +2,7 @@
 
 module test_bench;
 
-`include "sdr_parameters.vh"
+`include "sdram_model/sdr_parameters.vh"
 
       reg CLK100MHZ = 0;
       always #5 CLK100MHZ = ~CLK100MHZ;
@@ -72,13 +72,12 @@ module test_bench;
             sdram.RAS, sdram.CAS, sdram.WE, {sdram.LDQM, sdram.UDQM}
       );
 
-      integer serial_file = $fopen("/home/petya/archive/altera/projects/miksys/miksys_soft/k.packed", "rb");
+      integer serial_file = $fopen("PATH_TO_SERIAL_IN", "rb");
       reg [7:0] serial_byte;
       integer k;
       initial begin
             #100000;
             while (!$feof(serial_file)) begin
-            //for (j = 0; j < 1070; j = j+1) begin
                   #166;
                   in = 0; #83;
                   
@@ -91,28 +90,5 @@ module test_bench;
                   
             end
       end
-/*      initial begin
-            #2000;
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 0
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 0
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 0
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 0; usb_p = 1; #650; // 1
-            
-            usb_m = 1; usb_p = 0; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 1
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 0
-            usb_m = 1; usb_p = 0; #650; // 1
-            usb_m = 0; usb_p = 1; #650; // 0
-            usb_m = 0; usb_p = 1; #650; // 1
-            usb_m = 0; usb_p = 1; #650; // 1
-            
-            usb_m = 0; usb_p = 0; #1300; // SE0
-            usb_m = 1; usb_p = 0;
-      end*/
       
 endmodule
