@@ -2,6 +2,7 @@
 
 module test_bench;
 
+`define den64Mb
 `include "sdram_model/sdr_parameters.vh"
 
       reg CLK100MHZ = 0;
