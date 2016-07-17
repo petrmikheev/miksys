@@ -1,3 +1,5 @@
+// Example of usb_request_func using
+
 #define DATA_MEM_OFFSET 1024
 //#define DEV_USB DEV_SERIAL
 #define DEBUG_USB

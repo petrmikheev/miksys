@@ -1,3 +1,5 @@
+// Small test for main instructions
+
 #define OK 0x1c00 | '+'
 #define FAIL 0xe000 | 'X'
 
