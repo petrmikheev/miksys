@@ -248,7 +248,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[4]
 set_global_assignment -name AUTO_RESOURCE_SHARING ON
 set_global_assignment -name SYSTEMVERILOG_FILE timer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE test_bench_ps2.sv
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[8]
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[9]
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to IO[10]
