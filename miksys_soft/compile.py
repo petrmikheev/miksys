@@ -2,7 +2,6 @@
 #coding: utf8
 
 import sys, subprocess, struct, re
-from shlex import shlex
 
 opcodes = {
     'NOP'   : 0x0,
@@ -143,7 +142,7 @@ class Param:
             self.value = parseConst(s)
             self.type = 'const'
             return
-        except Exception as e: pass
+        except Exception: pass
         if s[0] == '[':
             if s[-1] != ']': raise Exception('Incorrect param: ' + s)
             self.type = 'mem'
@@ -251,6 +250,7 @@ if len(sys.argv) != 3:
     sys.exit(0)
 fout = file(sys.argv[-1], 'wb')
 #consts_str = ' '.join(['-D%s=%d' % (k, v) for k, v in consts.iteritems()])
+m = None
 for l in subprocess.check_output('gcc -w -E %s -undef -nostdinc' % sys.argv[1], shell = True).split('\n'):
     l = l.strip()
     if len(l) == 0 or l[0] == '#': continue
