@@ -165,21 +165,7 @@ checkmem_loop:
         DJNE checksum_failed
         
         MOV OUT_LEDS, 0
-        MOV MEM_ADDR_LO, LO(MEM_OFFSET)
-        MOV MEM_ADDR_HI, HI(MEM_OFFSET)
-        DRET
-        
-        /*CCMOV [BUF], ('K'<<8)|'O'
-        CALL printf_func
-            CCMOV [BUF+1], 0
-            CCMOV [SP], 0        // buf
-            MOV [SP+1], BUF    // str
-            CCMOV [SP+2], 0xff01 // color|flags
-
-        CMOV MEM_ADDR_LO, 128
-        CMOV MEM_ADDR_HI, 0
-        WRITE ZERO, [SP]
-        DJ end*/
+        DJ MEM_OFFSET
 
 #include "../include/usb.H"
 #include "../include/math.H"

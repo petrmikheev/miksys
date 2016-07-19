@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     miksys->serial_in = fopen("../miksys_soft/serial_in", "r");
     miksys->serial_out = fopen("../miksys_soft/serial_out", "w");
     ui->display->setMIKSYS(miksys);
-    core = new FastCore(miksys, (char*)"../startup/startup.bin");
+    core = new FastCore(miksys, (char*)"../miksys_soft/ustartup/startup.bin");
     updateLEDs(miksys->buttonState);
     timerId = -1;
     showInfo();

@@ -8,7 +8,7 @@
 /* Деление с остатком
 * (делимое, делитель) -> (остаток, частное)
 */
-#define divide_func 0x0002A6
+#define divide_func 0x0002A2
 
 /* Перевод числа в текст
 * (буфер, число, флаги|основание, цвет) -> (смещенный буфер) 
@@ -16,14 +16,14 @@
 * флаг 0x100 = 1 -> буфер указывает на последний символ
 * флаг 0x200     -> отображать знак для отрицательных
 */
-#define set_number_base_func 0x0002E0
+#define set_number_base_func 0x0002DC
 
 /* Форматирование текста для вывода на экран
 * (буфер, строка, цвет|флаги, [число1], ..., [число9]) -> (смещенный буфер) 
 * флаг 0x0001 = 0 -> Форматирование включено
 * флаг 0x0001 = 1 -> Форматирование выключено
 */
-#define printf_func 0x00034C
+#define printf_func 0x000348
 
 /* Отправка запроса usb
 * (addr, data_out, data_in, size_in, parity) -> (NULL, NULL, data_buf, ok, parity) 
@@ -34,5 +34,5 @@
 * type = 0x4000       : receive data
 * type = 0xa000       : send empty data
 */
-#define usb_request_func 0x000194
+#define usb_request_func 0x000190
 

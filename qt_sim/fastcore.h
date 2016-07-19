@@ -9,7 +9,7 @@ class FastCore : public Core
 public:
     FastCore();
     static const size_t CACHE_SIZE = 16384;
-    static const size_t PROG_SIZE = 256;
+    static const size_t PROG_SIZE = 512;
     static const int PU_COUNT = 4;
     FastCore(MIKSYS* system, char* filename);
     void reset();
