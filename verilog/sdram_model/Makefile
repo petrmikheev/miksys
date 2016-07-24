@@ -1,4 +1,4 @@
-sdram_model:
+sdr_parameters.vh:
 	wget https://www.micron.com/~/media/documents/products/sim-model/dram/sdram/sdr_sdram.zip
 	unzip sdr_sdram.zip
 	rm sdr_sdram.zip

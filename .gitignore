@@ -1,1 +1,11 @@
 *~
+miksys_soft/serial_in
+miksys_soft/serial_out
+*.bin
+*.packed
+*.usb_packed
+verilog/db/
+verilog/incremental_db/
+verilog/output_files
+verilog/simulation
+verilog/sdram_model/*.*

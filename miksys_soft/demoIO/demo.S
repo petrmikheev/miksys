@@ -236,7 +236,7 @@ shift_key: .const 0x12
 text_pointer: .const TEXT_FIELD_BEGIN
 
 keymap:
-#include "include/keymap.H"
+#include "../include/keymap.H"
 
 DATA_END:
 
