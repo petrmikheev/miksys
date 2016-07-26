@@ -1,4 +1,4 @@
-build_all: build qt_sim miksys.svf miksys_epcs4.svf
+build_all: build qt_sim verilog/miksys.svf verilog/miksys_epcs4.svf
 
 build:
 	$(MAKE) -C verilog/charmap
@@ -8,19 +8,19 @@ build:
 	$(MAKE) -C miksys_soft/demoIO
 	$(MAKE) -C verilog
 
-miksys.svf: build
+verilog/miksys.svf: build
 	quartus_cpf -c -q 10MHz -g 3.3 -n v verilog/output_files/miksys.sof verilog/miksys.svf
 
-miksys_epcs4.svf: build
+verilog/miksys_epcs4.svf: build
 	quartus_cpf -c -d EPCS4 -s EP3C10 verilog/output_files/miksys.sof verilog/output_files/miksys.jic
 	quartus_cpf -c -q 10MHz -g 3.3 -n v verilog/output_files/miksys.jic verilog/miksys_epcs4.svf
 
-write: miksys.svf
+write: verilog/miksys.svf
 	sudo rmmod ftdi_sio
 	sudo ./mbftdi verilog/miksys.svf
 	sudo modprobe ftdi_sio
 
-write_epcs4: miksys_epcs4.svf
+write_epcs4: verilog/miksys_epcs4.svf
 	sudo rmmod ftdi_sio
 	sudo ./mbftdi verilog/epcs4_tunnel.svf
 	sudo ./mbftdi verilog/miksys_epcs4.svf
