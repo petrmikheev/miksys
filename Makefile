@@ -1,46 +1,69 @@
-build_all: build qt_sim verilog/miksys.svf verilog/miksys_epcs4.svf
+VERILOG_OUTPUT = verilog/output_files
+QTSIM = qt_sim/qt_sim
 
-build:
-	$(MAKE) -C verilog/charmap
-	$(MAKE) -C verilog/sdram_model
+.PHONY: all soft write write_epcs4
+all: \
+	$(QTSIM) \
+	verilog/miksys.svf verilog/miksys_epcs4.svf \
+	miksys_soft/demo3d/demo3d.packed miksys_soft/demoIO/demo.packed
+
+verilog/startup/startup.hex miksys_soft/ustartup/startup.bin:
 	$(MAKE) -C miksys_soft/ustartup
-	$(MAKE) -C miksys_soft/demo3d
-	$(MAKE) -C miksys_soft/demoIO
-	$(MAKE) -C verilog
 
-verilog/miksys.svf: build
-	quartus_cpf -c -q 10MHz -g 3.3 -n v verilog/output_files/miksys.sof verilog/miksys.svf
+verilog/charmap/charmap.hex:
+	$(MAKE) -C verilog/charmap
 
-verilog/miksys_epcs4.svf: build
-	quartus_cpf -c -d EPCS4 -s EP3C10 verilog/output_files/miksys.sof verilog/output_files/miksys.jic
-	quartus_cpf -c -q 10MHz -g 3.3 -n v verilog/output_files/miksys.jic verilog/miksys_epcs4.svf
+SDRAM_MODEL_FILES = verilog/sdram_model/sdr_module.v \
+	verilog/sdram_model/sdr_parameters.vh \
+	verilog/sdram_model/sdr.v
+
+$(SDRAM_MODEL_FILES):
+	$(MAKE) -C verilog/sdram_model
+
+$(VERILOG_OUTPUT)/miksys.sof: verilog/startup/startup.hex verilog/charmap/charmap.hex $(SDRAM_MODEL_FILES)
+	cd verilog && quartus_sh --flow compile miksys.qpf
+
+verilog/miksys.svf: $(VERILOG_OUTPUT)/miksys.sof
+	quartus_cpf -c -q 10MHz -g 3.3 -n v $< $@
+
+$(VERILOG_OUTPUT)/miksys.jic: $(VERILOG_OUTPUT)/miksys.sof
+	quartus_cpf -c -d EPCS4 -s EP3C10 $< $@
+
+verilog/miksys_epcs4.svf: $(VERILOG_OUTPUT)/miksys.jic
+	quartus_cpf -c -q 10MHz -g 3.3 -n v $< $@
 
 write: verilog/miksys.svf
 	sudo rmmod ftdi_sio
 	sudo ./mbftdi verilog/miksys.svf
 	sudo modprobe ftdi_sio
 
-write_epcs4: verilog/miksys_epcs4.svf
+write_epcs4: verilog/miksys_epcs4.svf verilog/epcs4_tunnel.svf
 	sudo rmmod ftdi_sio
 	sudo ./mbftdi verilog/epcs4_tunnel.svf
 	sudo ./mbftdi verilog/miksys_epcs4.svf
 	sudo modprobe ftdi_sio
 
-qt_sim:
+$(QTSIM):
 	cd qt_sim && qmake
 	$(MAKE) -C qt_sim
 
-sim_demo3d:
+miksys_soft/demo3d/demo3d.packed:
+	$(MAKE) -C miksys_soft/demo3d
+
+miksys_soft/demoIO/demo.packed:
+	$(MAKE) -C miksys_soft/demoIO
+
+sim_demo3d: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demo3d/demo3d.packed
 	cp miksys_soft/demo3d/demo3d.packed miksys_soft/serial_in
 	cd qt_sim && ./qt_sim
 
-sim_demoIO:
+sim_demoIO: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demoIO/demo.packed
 	cp miksys_soft/demoIO/demo.packed miksys_soft/serial_in
 	cd qt_sim && ./qt_sim
 
 .PHONY: clean
 clean:
-	rm -rf verilog/db verilog/incremental_db verilog/simulation output_files
+	rm -rf verilog/db verilog/incremental_db verilog/simulation $(VERILOG_OUTPUT)
 	$(MAKE) -C verilog/sdram_model clean
 	$(MAKE) -C miksys_soft/ustartup clean
 	$(MAKE) -C miksys_soft/demo3d clean
