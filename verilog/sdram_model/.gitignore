@@ -1,3 +1,5 @@
 *.v
 *.sv
+*.vh
+sdr_sdram.zip
 readme.txt
