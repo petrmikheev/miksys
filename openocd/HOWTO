@@ -1,0 +1,1 @@
+openocd -f board/marsohod2.cfg -c init -c "svf -tap ep3c10.tap project.svf" -c shutdown
