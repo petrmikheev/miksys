@@ -4,4 +4,4 @@ startup.bin: startup.S usb_read.S
 
 .PHONY: clean
 clean:
-	rm startup.bin
+	rm -f startup.bin
