@@ -8,5 +8,4 @@ verilog/db/
 verilog/incremental_db/
 verilog/output_files
 verilog/simulation
-verilog/sdram_model/*.*
 verilog/miksys.qws
