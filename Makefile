@@ -38,5 +38,10 @@ sim_demoIO:
 	cp miksys_soft/demoIO/demo.packed miksys_soft/serial_in
 	cd qt_sim && ./qt_sim
 
+.PHONY: clean
 clean:
 	rm -rf verilog/db verilog/incremental_db verilog/simulation output_files
+	$(MAKE) -C verilog/sdram_model clean
+	$(MAKE) -C miksys_soft/ustartup clean
+	$(MAKE) -C miksys_soft/demo3d clean
+	$(MAKE) -C miksys_soft/demoIO clean

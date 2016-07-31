@@ -10,5 +10,6 @@ demo3d.packed: demo3d.bin
 demo3d.usb_packed: demo3d.bin
 	../pack_usb.py demo3d.bin demo3d.usb_packed
 
+.PHONY: clean
 clean:
 	rm -f demo3d.bin demo3d.packed demo3d.usb_packed

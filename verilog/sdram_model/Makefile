@@ -3,5 +3,6 @@ sdr_parameters.vh:
 	unzip sdr_sdram.zip
 	rm sdr_sdram.zip
 
+.PHONY: clean
 clean:
 	rm -f readme.txt sdr_module.v sdr_parameters.vh sdr.v test.v

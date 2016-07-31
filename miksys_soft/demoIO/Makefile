@@ -10,5 +10,6 @@ demo.packed: demo.bin
 demo.usb_packed: demo.bin
 	../pack_usb.py demo.bin demo.usb_packed
 
+.PHONY: clean
 clean:
 	rm -f demo.bin demo.packed demo.usb_packed
