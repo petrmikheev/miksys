@@ -30,7 +30,7 @@ $(VERILOG_OUTPUT)/miksys.jic: $(VERILOG_OUTPUT)/miksys.sof
 	quartus_cpf -c -d EPCS4 -s EP3C10 $< $@
 
 verilog/miksys_epcs4.svf: $(VERILOG_OUTPUT)/miksys.jic
-	quartus_cpf -c -q 10MHz -g 3.3 -n v $< $@
+	quartus_cpf -c -q 10MHz -g 3.3 -n pb $< $@
 
 write: verilog/miksys.svf
 	sudo rmmod ftdi_sio
