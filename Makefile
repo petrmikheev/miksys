@@ -47,10 +47,10 @@ $(QTSIM):
 	cd qt_sim && qmake
 	$(MAKE) -C qt_sim
 
-demo3d:
+demo3d: miksys_soft/ustartup/startup.bin
 	$(MAKE) -C miksys_soft/demo3d
 
-demoIO:
+demoIO: miksys_soft/ustartup/startup.bin
 	$(MAKE) -C miksys_soft/demoIO
 
 sim_demo3d: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demo3d/demo3d.packed

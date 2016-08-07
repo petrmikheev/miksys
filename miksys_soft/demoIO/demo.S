@@ -1,3 +1,4 @@
+#include "../include/std.H"
 #define DATA_CACHE_OFFSET 0x3000
 #define DATA_MEM_OFFSET 1200
 #define USB_BUF_OFFSET 0x2000
@@ -211,9 +212,9 @@ us_ret: MOV MEM_ADDR_LO, [r15]
         MOV MEM_ADDR_HI, [r15+1]
         DRET
 
-#include "../include/math.H"
-#include "../include/string.H"
-#include "../include/usb.H"
+//#include "../include/div.H"
+//#include "../include/string.H"
+//#include "../include/usb.H"
 #include "../include/keyboard.H"
 
 .data DATA_CACHE_OFFSET DATA_MEM_OFFSET

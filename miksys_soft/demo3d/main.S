@@ -218,7 +218,7 @@ wait_frame_loop:
             NOP
 
 #include "../include/keyboard.H"
-//#include "../include/math.H"
+//#include "../include/div.H"
 //#include "../include/string.H"
 #include "mouse.H"
 

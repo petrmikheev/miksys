@@ -7,12 +7,11 @@
 set_number_base_func:
 #define _(x) set_number_base_func_##x
 #define buf r8
-#define num r9
+#define num r13
 #define base r10
-#define color r12
-#define sign r13
+#define color r9
+#define sign r11
 #define ARGS_COUNT 12
-#define STACK_FRAME_SIZE (ARGS_COUNT+6)
         MOV [r15+ARGS_COUNT+2], r8
         MOV [r15+ARGS_COUNT+3], r9
         MOV [r15+ARGS_COUNT+4], r10
@@ -35,43 +34,50 @@ set_number_base_func:
             MUL base, 1
             MOV color, [r15+3]
             MOV buf, [r15]
+        
         ADD buf, buf, sign
 _(sh):  CMPEQ num, MUL_RESULT_LO
         JCS _(sh)
             MUL base, MUL_RESULT_LO
 _(skip_sh): ADD buf, buf, 1
             MOV [r15], buf
-            RSBS r11, MUL_RESULT_HI, 0
+            RSBS r12, MUL_RESULT_HI, 0
+        
+        MOV [r15+1], sign
+        MOV [r15+2], base
 _(loop):
         CALL divide_func
             SUB buf, buf, 1
-            ADD r15, r15, STACK_FRAME_SIZE
-            MOV [r15+STACK_FRAME_SIZE], num
-            MOV [r15+STACK_FRAME_SIZE+1], base
-        SUB r15, r15, STACK_FRAME_SIZE
-            MOV r11, [r15]
-            MOVS num, [r15+1]
+            MOV r12, num
+            MOV r13, [r15+2]
+            NOP
+        CMP num, 0
         JNE _(loop)
-            CMP r11, 10
-            ADDCC r11, r11, '0'
-            ADDCS r11, r11, 'A'-10
-            OR [buf], r11, color
+            CMP r12, 10
+            ADDCC r12, r12, '0'
+            ADDCS r12, r12, 'A'-10
+            OR [buf], r12, color
         SUB buf, buf, 1
+        MOV sign, [r15+1]
         TST sign, 1
         ORNE sign, color, '-'
         MOVNE [buf], sign
-        J ret_r8_11
-            MOV MEM_ADDR_LO, [r15+4]
-            MOV MEM_ADDR_HI, [r15+5]
-            MOV r13, [r15+7]
-            MOV r12, [r15+6]
+        MOV MEM_ADDR_LO, [r15+4]
+        MOV MEM_ADDR_HI, [r15+5]
+        MOV r13, [r15+7]
+        MOV r12, [r15+6]
+set_number_base_func_ret_r8_11:
+        RET
+            MOV r8, [r15+ARGS_COUNT+2]
+            MOV r9, [r15+ARGS_COUNT+3]
+            MOV r10, [r15+ARGS_COUNT+4]
+            MOV r11, [r15+ARGS_COUNT+5]
 #undef _
 #undef buf
 #undef num
 #undef base
 #undef color
 #undef sign
-#undef STACK_FRAME_SIZE
 
 /* Форматирование текста для вывода на экран
 * (буфер, строка, цвет|флаги, [число1], ..., [число9]) -> (смещенный буфер) 
@@ -98,7 +104,7 @@ printf_func:
         ADD next_num, r15, 3
 _(loop):
         MOVS r11, [str]
-        JEQ ret_r8_11
+        JEQ set_number_base_func_ret_r8_11
             MOVEQ [r15], buf
             MOVEQ MEM_ADDR_LO, [r15+ARGS_COUNT]
             MOVEQ MEM_ADDR_HI, [r15+ARGS_COUNT+1]

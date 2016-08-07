@@ -165,7 +165,7 @@ checkmem_loop:
         MOV OUT_LEDS, 0
         DJ MEM_OFFSET
 
-#include "../include/usb.H"
-#include "../include/math.H"
+#include "../include/div.H"
 #include "../include/string.H"
+#include "../include/usb.H"
 
