@@ -25,21 +25,34 @@
         USB_STATUS
         
         CALL usb_request_func
+            CCMOV [BUF+1], 0x0680
+            CCMOV [BUF+2], 0x0200
+            CCMOV [BUF+4], 0x0040
+            CCMOV [SP+3], 0x0040
+        USB_STATUS
+        MOV [BUF+4], ZERO
+        MOV r11, [ZERO+10]
+        
+        CALL usb_request_func
             CCMOV [SP+3], 0 // do not read data
             CCMOV [BUF+1], 0xff21 // usbms_reset
             CCMOV [BUF+2], 0
             ADD r12, BUF, 8
         USB_STATUS
         
+        TST r11, 0x80
         CALL usb_request_func
             CCMOV [SP+3], 0 // do not read data
             CCMOV [BUF+1], 0x0102 // clear halt
-            CCMOV [BUF+3], 0x80 | ENDPOINT_IN
-            CCMOV [r12], 0x280a
+            CCMOVNE [BUF+3], 0x81
+            CCMOVEQ [BUF+3], 0x82
         USB_STATUS
+        CCMOV [r12], 0x280a
         
         CCMOV [SP+3], 0 // do not read data
-        CCMOV [BUF+3], ENDPOINT_OUT
+        TST r11, 0x80
+        CCMOVNE [BUF+3], 2
+        CCMOVNE [BUF+3], 1
         DCALL usb_request_func
         USB_STATUS
         
@@ -50,12 +63,16 @@
         CCMOV [BUF+6], 0x60 // data size hi (for usbms_read) [BUF+5], 0x8000 //
         CCMOV [BUF8+2], 0x0800 // addr/512  0x2233
         CCMOV [BUF8+4], 0x30 // size/512 <<< 8 (for usbms_read) 0x4000 //
-        CCMOV [SP], 0x2000 | (128*ENDPOINT_OUT) | 1 // addr
+        TST r11, 0x80
+        CCMOVNE [SP], 0x2000 | (128*2) | 1 // addr
+        CCMOVEQ [SP], 0x2000 | (128*1) | 1 // addr
         CCMOV [SP+4], 0 // usb data parity
         DCALL usb_request_func // scsi read 6M
         USB_STATUS
         
-        CCMOV [SP], 0x4000 | (128*ENDPOINT_IN) | 1 // addr
+        TST r11, 0x80
+        CCMOVNE [SP], 0x4000 | (128*1) | 1 // addr
+        CCMOVEQ [SP], 0x4000 | (128*2) | 1 // addr
         CCMOV [SP+4], 0 // usb data parity
 
         MOV r7, 0

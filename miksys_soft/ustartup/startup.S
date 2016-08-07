@@ -1,6 +1,4 @@
 #define MEM_OFFSET 0x100000
-#define ENDPOINT_IN 1
-#define ENDPOINT_OUT 2
 #define USB_DATA_SIZE 0x800*1024 //0x1800*1024
 
 //#define USB_READ_DEBUG
@@ -38,11 +36,11 @@ clear_cache_loop:
         CMOV MEM_ADDR_LO, 0
         CMOV MEM_ADDR_HI, 0
         WRITE ZERO, 40*128 // clear text buffer
+        MOV r1, 5
+vga_zero_loop:
         OUT DEV_VGA, 0
-        OUT DEV_VGA, 0
-        OUT DEV_VGA, 0
-        OUT DEV_VGA, 0
-        OUT DEV_VGA, 0
+        SUBS r1, r1, 1
+        DJNE vga_zero_loop
         OUT DEV_VGA, 0x80
         wait_mem
         

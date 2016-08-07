@@ -1,13 +1,13 @@
 VERILOG_OUTPUT = verilog/output_files
 QTSIM = qt_sim/qt_sim
 
-.PHONY: all soft write write_epcs4
+.PHONY: all soft write write_epcs4 demo3d demoIO
 all: \
 	$(QTSIM) \
 	verilog/miksys.svf verilog/miksys_epcs4.svf \
-	miksys_soft/demo3d/demo3d.packed miksys_soft/demoIO/demo.packed
+	demo3d demoIO
 
-verilog/startup/startup.hex miksys_soft/ustartup/startup.bin:
+verilog/startup/startup.hex miksys_soft/ustartup/startup.bin: miksys_soft/ustartup/*.S miksys_soft/include/*.H
 	$(MAKE) -C miksys_soft/ustartup
 
 verilog/charmap/charmap.hex:
@@ -20,7 +20,7 @@ SDRAM_MODEL_FILES = verilog/sdram_model/sdr_module.v \
 $(SDRAM_MODEL_FILES):
 	$(MAKE) -C verilog/sdram_model
 
-$(VERILOG_OUTPUT)/miksys.sof: verilog/startup/startup.hex verilog/charmap/charmap.hex $(SDRAM_MODEL_FILES)
+$(VERILOG_OUTPUT)/miksys.sof: verilog/startup/startup.hex verilog/charmap/charmap.hex $(SDRAM_MODEL_FILES) verilog/*.sv verilog/*.v
 	cd verilog && quartus_sh --flow compile miksys.qpf
 
 verilog/miksys.svf: $(VERILOG_OUTPUT)/miksys.sof
@@ -47,10 +47,10 @@ $(QTSIM):
 	cd qt_sim && qmake
 	$(MAKE) -C qt_sim
 
-miksys_soft/demo3d/demo3d.packed:
+demo3d:
 	$(MAKE) -C miksys_soft/demo3d
 
-miksys_soft/demoIO/demo.packed:
+demoIO:
 	$(MAKE) -C miksys_soft/demoIO
 
 sim_demo3d: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demo3d/demo3d.packed

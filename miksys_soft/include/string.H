@@ -11,15 +11,16 @@ set_number_base_func:
 #define base r10
 #define color r12
 #define sign r13
-#define STACK_FRAME_SIZE 12
-        MOV [r15+4], r8
-        MOV [r15+5], r9
-        MOV [r15+6], r10
-        MOV [r15+7], r11
-        MOV [r15+8], MEM_ADDR_LO
-        MOV [r15+9], MEM_ADDR_HI
-        MOV [r15+10], r12
-        MOV [r15+11], r13
+#define ARGS_COUNT 12
+#define STACK_FRAME_SIZE (ARGS_COUNT+6)
+        MOV [r15+ARGS_COUNT+2], r8
+        MOV [r15+ARGS_COUNT+3], r9
+        MOV [r15+ARGS_COUNT+4], r10
+        MOV [r15+ARGS_COUNT+5], r11
+        MOV [r15+4], MEM_ADDR_LO
+        MOV [r15+5], MEM_ADDR_HI
+        MOV [r15+6], r12
+        MOV [r15+7], r13
         
         MOV base, [r15+2]
         MOV sign, 0
@@ -59,15 +60,11 @@ _(loop):
         TST sign, 1
         ORNE sign, color, '-'
         MOVNE [buf], sign
-        MOV MEM_ADDR_LO, [r15+8]
-        MOV MEM_ADDR_HI, [r15+9]
-        MOV r13, [r15+11]
-        MOV r12, [r15+10]
-        RET
-            MOV r8, [r15+4]
-            MOV r9, [r15+5]
-            MOV r10, [r15+6]
-            MOV r11, [r15+7]
+        J ret_r8_11
+            MOV MEM_ADDR_LO, [r15+4]
+            MOV MEM_ADDR_HI, [r15+5]
+            MOV r13, [r15+7]
+            MOV r12, [r15+6]
 #undef _
 #undef buf
 #undef num
@@ -83,7 +80,6 @@ _(loop):
 */
 printf_func:
 #define _(x) printf_func_##x
-#define ARGS_COUNT 12
 #define buf r8
 #define str r9
 #define next_num r10
@@ -102,7 +98,7 @@ printf_func:
         ADD next_num, r15, 3
 _(loop):
         MOVS r11, [str]
-        JEQ _(end)
+        JEQ ret_r8_11
             MOVEQ [r15], buf
             MOVEQ MEM_ADDR_LO, [r15+ARGS_COUNT]
             MOVEQ MEM_ADDR_HI, [r15+ARGS_COUNT+1]
@@ -116,13 +112,6 @@ _(loop):
             MOV r11, SHIFT_RESULT
 
         DJ _(loop)
-
-_(end): 
-        RET
-            MOV r8, [r15+ARGS_COUNT+2]
-            MOV r9, [r15+ARGS_COUNT+3]
-            MOV r10, [r15+ARGS_COUNT+4]
-            MOV r11, [r15+ARGS_COUNT+5]
 
 _(handle_char):
         MOVS r12, state
