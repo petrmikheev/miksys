@@ -1,7 +1,8 @@
 #!/usr/bin/python
 #coding: utf8
 
-import sys, subprocess, struct, re
+import sys, subprocess, struct, re, os
+base_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 opcodes = {
     'NOP'   : 0x0,
@@ -85,9 +86,6 @@ consts = {
     'MEM_FLAG' : 8
 }
 
-macroses = {}
-commands = []
-
 def LO(v):
     if isinstance(v, int):
         p = struct.pack('i', v)
@@ -108,15 +106,22 @@ def RGB(s):
     r,g,b = [int(x) for x in s.split()]
     return (r<<11) + (g<<6) + b
 
+def pconst(s):
+    if s in consts: return consts[s]
+    return s
+
 def parseConst(s):
-    s = s.strip()
+    #s = s.strip()
     #s = re.sub(r"'\\?.'", str(consts[w]), s)
     #if len(s) == 3 and s[0] == "'" and s[2] == "'":
     #    return ord(s[1])
-    k = consts.keys()
-    k.sort(key=len, reverse=True)
-    for w in k:
-        s = re.sub(r'\b%s\b' % w, str(consts[w]), s)
+    
+    s = re.sub(r'(\b\w*\b)', lambda x: str(pconst(x.group(1))), s)
+    
+    #k = consts.keys()
+    #k.sort(key=len, reverse=True)
+    #for w in k:
+    #    s = re.sub(r'\b%s\b' % w, str(consts[w]), s)
         #s = s.replace(w, str(consts[w]))
     for i in s.replace('LO', '').replace('HI', '').replace('RGB', ''):
         if i not in ' .abcdefABCDEF0123456789()+-*/&|^~<>x%"':
@@ -182,6 +187,7 @@ class Param:
         return 'UNKNOWN'
 
 class Macro:
+    mid = 0
     def __init__(self, l):
         l = l.replace(',', ' ').split()
         self.title = l[1]
@@ -194,7 +200,8 @@ class Macro:
         l = l.strip()
         if len(self.body) == 0: return
         params = [v.strip() for v in l[len(self.title):].split(',') if v.strip() != '']
-        params.append('m_%d_' % addr)
+        params.append('_m_%d_' % Macro.mid)
+        Macro.mid += 1
         if len(params) != len(self.params):
             print l, ':', params
             print self.params
@@ -208,257 +215,324 @@ class Macro:
             if q != '': stage1_handle_line(q)
 
 def addLink(l):
-    consts[l] = addr
-    print '%s = 0x%06X' % (l, addr)
+    global seg, link_prefix
+    seg.links[l] = seg.addr
+    #if verbose: print '%s = 0x%06X' % (l, addr)
 
-addr = 0
 def stage1_handle_line(l):
-    global addr
-    if not l.startswith('.ascii '):
+    global seg
+    if '.ascii' not in l:
         l = l.replace("'\"'", str(ord('"')))
         l = re.sub(r"'(\\?.)'", lambda x: eval('str(ord("%s"))' % x.group(1)), l)
+    if '"' not in l:
+        l = re.sub(r'\b_', link_prefix, l)
+    else:
+        l1 = l[:l.find('"')]
+        l2 = l[l.find('"'):]
+        l = re.sub(r'\b_', link_prefix, l1) + l2
     w = l.split()
     if w[0][-1] == ':':
         addLink(w[0][:-1])
         l = l[len(w[0]):].strip()
         w = w[1:]
+    elif len(w) > 1 and w[1] == ':':
+        addLink(w[0])
+        l = l[l.find(':')+1:].strip()
+        w = w[2:]
     if len(w) == 0: return
     for k, v in macroses.iteritems():
         if w[0] == k:
             v.use(l)
             return
-    if not virtual:
-        commands.append(l)
+    seg.commands.append(l)
     if w[0] == '.words':
-        addr += parseConst(l[7:])
+        seg.addr += parseConst(l[7:])
     elif w[0] == '.ascii':
         s = l[7:].strip()[1:-1].replace('\\n', '\n')
-        addr += (len(s)+3) // 2
+        seg.addr += (len(s)+3) // 2
     elif w[0] == '.const':
         for c in l[7:].split(','):
-            if '.' in str(parseConst(c)):
-                addr += 2
-            else:
-                addr += 1
+            #if '.' in str(parseConst(c)):
+            #    seg.addr += 2
+            #else:
+            seg.addr += 1
     else:
-        addr += 2
+        seg.addr += 2
 
-virtual = False
-in_macro = False
-if len(sys.argv) != 3:
-    print 'Using: ./compile input.S output.bin'
-    sys.exit(0)
-fout = file(sys.argv[-1], 'wb')
-#consts_str = ' '.join(['-D%s=%d' % (k, v) for k, v in consts.iteritems()])
-m = None
-for l in subprocess.check_output('gcc -w -E %s -undef -nostdinc' % sys.argv[1], shell = True).split('\n'):
-    l = l.strip()
-    if len(l) == 0 or l[0] == '#': continue
-    if in_macro:
-        if l == '.endmacro':
-            in_macro = False
-        else:
-            m.body += l+'\n'
-        continue
-    if l.startswith('.macro '):
-        in_macro = True
-        m = Macro(l)
-        continue
-    if l.startswith('.virtual '): # .data .virtual_data .virtual_code
-        addr = parseConst(l.split()[1])
-        virtual = True
-        continue
-    if l.startswith('.code ') or l.startswith('.data '):
-        addr = parseConst(l.split()[1])
+class Segment:
+    def __init__(self, head):
+        self.head = head
+        self.addr = 0
+        self.links = {}
+        self.commands = [head]
+
+if __name__ == "__main__":
+    code_segments = []
+    data_segments = []
+    virtual_segments = []
+    seg = None
+    verbose = False
+    cpp_opts = ''
+    for opt in sys.argv:
+        if opt=='-v':
+            verbose = True
+            sys.argv.remove(opt)
+        if opt[:2] in ['-D', '-I']:
+            cpp_opts += opt + ' '
+            sys.argv.remove(opt)
+    if len(sys.argv) < 3:
+        print 'Using: miksys_asm [-v] [-Dmacro=value] [-Iinclude_dir] input.{s,S} ... output.bin'
+        sys.exit(0)
+    fout = file(sys.argv[-1], 'wb')
+    #consts_str = ' '.join(['-D%s=%d' % (k, v) for k, v in consts.iteritems()])
+    for filename in sys.argv[1:-1]:
+        link_prefix = '_L_%X_' % abs(hash(filename))
+        m = None
         virtual = False
-        commands.append(l)
-        continue
-    stage1_handle_line(l)
-
-addr = 0
-real_addr = 0
-for l in commands:
-    if l.startswith('.code ') or l.startswith('.data '):
-        addr = parseConst(l.split()[1])
-        new_real_addr = parseConst(l.split()[2])
-        if new_real_addr < real_addr: raise Exception('Incorrect segment address: 0x%06X -> 0x%06X' % (real_addr, new_real_addr))
-        if new_real_addr > real_addr:
-            fout.write(b'\0\0' * (new_real_addr - real_addr))
-            print '0x%06X:  ***  ZEROS %5d         %s' % (real_addr, new_real_addr - real_addr, l)
-            real_addr = new_real_addr
-        continue
-    if l.startswith('.words '):
-        wc = parseConst(l[7:])
-        addr += wc
-        fout.write(b'\0\0' * wc)
-        print '0x%06X:  ***  ZEROS %5d       %s' % (real_addr, wc, l)
-        real_addr += wc
-        continue
-    if l.startswith('.ascii '):
-        s = l[7:].strip()[1:-1].replace('\\n', '\n')
-        fout.write(s)
-        fout.write(b'\0' * (2 + len(s) % 2))
-        wc = (len(s) + 3) // 2
-        print '0x%06X:  ***  ASCII %5d         %s' % (real_addr, wc, l)
-        addr += wc
-        real_addr += wc
-        continue
-    if l.startswith('.const '):
-        for c in l[7:].split(','):
-            c = str(parseConst(c))
-            if '.' in c:
-                d = struct.pack('<f', float(c))
-                fout.write(d)
-                res = struct.unpack('<I', d)[0]
-                print '0x%06X:       %02X %02X %02X %02X         .const %s' % (real_addr, (res>>24)&255, (res>>16)&255, (res>>8)&255, res&255, c)
-                addr += 2
-                real_addr += 2
-            else:
-                res = parseConst(c)
-                if res<0: res += 65536
-                fout.write(struct.pack('<H', res))
-                print '0x%06X:       %02X %02X               .const %s' % (real_addr, (res>>8)&255, res&255, c)
-                addr += 1
-                real_addr += 1
-        continue
-    c = l.split()[0].upper()
-    cl = 0
-    for k, v in opcodes.iteritems():
-        if c.startswith(k):
-            opcode = v
-            cl = len(k)
-    if cl == 0: raise Exception('Unknown opcode: ' + l)
-    flagS = False
-    if len(c) == cl + 3 or len(c) == cl + 1:
-        if c[-1] != 'S': raise Exception('Unknown opcode: ' + l)
-        flagS = True
-    elif len(c) != cl and len(c) != cl+2:
-        raise Exception('Unknown opcode: ' + l)
-    if len(c) >= cl+2:
-        cond = conditions[c[cl:cl+2]]
-    else:
-        cond = conditions['AL']
-    params = [Param(p.strip()) for p in l[len(c):].split(',') if p.strip() != '']
-    c = c[:cl]
-    if flagS and opcode in [opcodes[x] for x in ['NOP', 'J', 'DJ', 'CMOV', 'CCMOV', 'READ', 'CMP', 'TST', 'MUL', 'SHL', 'SHR']]:
-        raise Exception('incorrect opcode: ' + l)
-    res = cond << 28
-    if c == 'SMUL': res |= 1 << 16
-    if c == 'WMUL': res |= 1 << 17
-    if flagS or opcode in [opcodes['CMP'], opcodes['TST']]:
-        res |= 1 << 22
-    if c == 'NOP':
-        pass
-    elif opcode == opcodes['J'] or opcode == opcodes['DJ']:
-        if c == 'RET' or c == 'DRET':
-            if len(params) > 0: raise Exception('unexpected parameter')
+        in_macro = False
+        macroses = {}
+        if filename.endswith('.S'):
+            lines = subprocess.check_output('%s/lcc/build/cpp %s -I%s/include %s' % (base_dir, cpp_opts, base_dir, filename), shell = True).split('\n')
         else:
-            if c == 'CALL' or c == 'DCALL':
-                res |= 6 << 20
+            lines = file(filename).readlines()
+        for l in lines:
+            l = l.strip()
+            if len(l) == 0 or l[0] == '#': continue
+            if in_macro:
+                if l == '.endmacro':
+                    in_macro = False
+                else:
+                    m.body += l+'\n'
+                continue
+            if l.startswith('.macro '):
+                in_macro = True
+                m = Macro(l)
+                continue
+            if l == '.virtual':
+                seg = virtual_segments[-1]
+                continue
+            if l == '.code':
+                seg = code_segments[-1]
+                continue
+            if l == '.data':
+                seg = data_segments[-1]
+                continue
+            if l.startswith('.virtual ') or l.startswith('.code ') or l.startswith('.data '):
+                seg = Segment(l)
+                if l[1] == 'v': virtual_segments.append(seg)
+                if l[1] == 'c': code_segments.append(seg)
+                if l[1] == 'd': data_segments.append(seg)
+                continue
+            try:
+                stage1_handle_line(l)
+            except Exception as e:
+                print l
+                raise e
+
+    segments = code_segments + data_segments + virtual_segments
+    for s in segments:
+        consts.update(s.links)
+    for s in segments:
+        p = re.sub(r'(\([^\)]*\))', lambda x: str(parseConst(x.group(1))), s.head)
+        if verbose: print 'Segment:', p
+        p = p.split()
+        addr = parseConst(p[1])
+        s.offset = parseConst(p[2])
+        s.commands[0] = '%s 0x%x 0x%x' % (p[0], addr, s.offset)
+        for l in s.links:
+            s.links[l] += addr
+            if verbose: print '%s = 0x%06X' % (l, s.links[l])
+    for s in segments:
+        consts.update(s.links)
+    segments.sort(key=lambda s: s.offset)
+    commands = []
+    for s in segments:
+        if s.head[1]!='v': commands += s.commands
+
+    addr = 0
+    real_addr = 0
+    for l in commands:
+        if l.startswith('.code ') or l.startswith('.data '):
+            addr = parseConst(l.split()[1])
+            new_real_addr = parseConst(l.split()[2])
+            if new_real_addr < real_addr: raise Exception('Incorrect segment address: 0x%06X -> 0x%06X' % (real_addr, new_real_addr))
+            if new_real_addr > real_addr:
+                fout.write(b'\0\0' * (new_real_addr - real_addr))
+                if verbose: print '0x%06X:  ***  ZEROS %5d         %s' % (real_addr, new_real_addr - real_addr, l)
+                real_addr = new_real_addr
+            continue
+        if l.startswith('.words '):
+            wc = parseConst(l[7:])
+            addr += wc
+            fout.write(b'\0\0' * wc)
+            if verbose: print '0x%06X:  ***  ZEROS %5d       %s' % (real_addr, wc, l)
+            real_addr += wc
+            continue
+        if l.startswith('.ascii '):
+            s = l[7:].strip()[1:-1].replace('\\n', '\n')
+            fout.write(s)
+            fout.write(b'\0' * (2 + len(s) % 2))
+            wc = (len(s) + 3) // 2
+            if verbose: print '0x%06X:  ***  ASCII %5d         %s' % (real_addr, wc, l)
+            addr += wc
+            real_addr += wc
+            continue
+        if l.startswith('.const '):
+            for c in l[7:].split(','):
+                c = str(parseConst(c))
+                if '.' in c:
+                    d = struct.pack('<f', float(c))
+                    fout.write(d)
+                    res = struct.unpack('<I', d)[0]
+                    if verbose: print '0x%06X:       %02X %02X %02X %02X         .const %s' % (real_addr, (res>>24)&255, (res>>16)&255, (res>>8)&255, res&255, c)
+                    addr += 2
+                    real_addr += 2
+                else:
+                    res = parseConst(c)
+                    if res<0: res += 65536
+                    fout.write(struct.pack('<H', res))
+                    if verbose: print '0x%06X:       %02X %02X               .const %s' % (real_addr, (res>>8)&255, res&255, c)
+                    addr += 1
+                    real_addr += 1
+            continue
+        c = l.split()[0].upper()
+        cl = 0
+        for k, v in opcodes.iteritems():
+            if c.startswith(k):
+                opcode = v
+                cl = len(k)
+        if cl == 0: raise Exception('Unknown opcode: ' + l)
+        flagS = False
+        if len(c) == cl + 3 or len(c) == cl + 1:
+            if c[-1] != 'S': raise Exception('Unknown opcode: ' + l)
+            flagS = True
+        elif len(c) != cl and len(c) != cl+2:
+            raise Exception('Unknown opcode: ' + l)
+        if len(c) >= cl+2:
+            cond = conditions[c[cl:cl+2]]
+        else:
+            cond = conditions['AL']
+        params = [Param(p.strip()) for p in l[len(c):].split(',') if p.strip() != '']
+        c = c[:cl]
+        if flagS and opcode in [opcodes[x] for x in ['NOP', 'J', 'DJ', 'CMOV', 'CCMOV', 'READ', 'CMP', 'TST', 'MUL', 'SHL', 'SHR']]:
+            raise Exception('incorrect opcode: ' + l)
+        res = cond << 28
+        if c == 'SMUL': res |= 1 << 16
+        if c == 'WMUL': res |= 1 << 17
+        if flagS or opcode in [opcodes['CMP'], opcodes['TST']]:
+            res |= 1 << 22
+        if c == 'NOP':
+            pass
+        elif opcode == opcodes['J'] or opcode == opcodes['DJ']:
+            if c == 'RET' or c == 'DRET':
+                if len(params) > 0: raise Exception('unexpected parameter')
             else:
-                res |= 2 << 20
-            if len(params) != 1: raise Exception('address expected')
-            a = params[0]
-            if a.type != 'const': raise Exception('incorrect address')
-            if opcode == opcodes['J']:
-                res |= (a.value//2 - addr//2 + 0x200000 - 4) & 0x1fffff
-            else:
-                res |= (a.value//2 - addr//2 + 0x200000 - 1) & 0x1fffff
-    elif opcode == opcodes['CMOV']:
-        if len(params) != 2: raise Exception('2 args expected: ' + l)
-        if params[1].type != 'const': raise Exception('const expected: ' + l)
-        if params[0].type != 'register' or params[0].inv: raise Exception('register expected: ' + l)
-        res |= params[0].reg << 16
-        res |= params[1].value & 0xffff
-        if params[0].special:
-            res |= 1 << 20
-    elif opcode == opcodes['CCMOV']:
-        if len(params) != 2: raise Exception('2 args expected: ' + l)
-        if params[1].type != 'const': raise Exception('const expected: ' + l)
-        if params[0].type != 'mem': raise Exception('cache expr expected: ' + l)
-        if params[0].value < 0 or params[0].value > 7: raise Exception('incorrect offset for CCMOV: ' + l)
-        res |= params[0].reg << 8
-        res |= params[0].value << 20
-        res |= params[1].value & 0xff
-        res |= (params[1].value & 0xff00) << 4
-    else:
-        if opcode == opcodes['MOV'] or opcode == opcodes['RGBSHR']:
+                if c == 'CALL' or c == 'DCALL':
+                    res |= 6 << 20
+                else:
+                    res |= 2 << 20
+                if len(params) != 1: raise Exception('address expected')
+                a = params[0]
+                if a.type != 'const': raise Exception('incorrect address')
+                if opcode == opcodes['J']:
+                    res |= (a.value//2 - addr//2 + 0x200000 - 4) & 0x1fffff
+                else:
+                    res |= (a.value//2 - addr//2 + 0x200000 - 1) & 0x1fffff
+        elif opcode == opcodes['CMOV']:
             if len(params) != 2: raise Exception('2 args expected: ' + l)
-            if c == 'IN' or c == 'OUT':
-                if params[0].type != 'const': raise Exception('const expected: ' + l)
-                params[0] = Param('r%d' % params[0].value)
-                if cond != 0: raise Exception('Unexpected condition: ' + l)
-            p1 = params[0]
-            p3 = params[1]
-            if c == 'IN':
-                if params[1].type == 'const':
-                    raise Exception('Unexpected const: ' + l)
-                p3 = params[0]
-                p1 = params[1]
-                p2 = Param('r2')
-            elif c == 'OUT':
-                p2 = Param('r3')
-            elif p1.special or (p3.special and p1.type != 'register'):
-                p2 = Param('r1')
-            else:
-                p2 = Param('r0')
-        elif len(params) == 2:
-            if opcode not in [opcodes[x] for x in ['CMP', 'TST', 'MUL', 'SHL', 'SHR', 'READ']]:
-                raise Exception('incorrect args count: ' + l)
-            p1 = None
-            p2 = params[0]
-            p3 = params[1]
-        elif len(params) == 3:
-            if opcode in [opcodes[x] for x in ['CMP', 'TST', 'MUL', 'SHL', 'SHR', 'READ']]:
-                raise Exception('incorrect args count: ' + l)
-            p1 = params[0]
-            p2 = params[1]
-            p3 = params[2]
-        else: raise Exception('incorrect args count: ' + l)
-        if p2.type != 'register': raise Exception('arg2 should be register: ' + l)
-        res |= p2.reg << 12
-        if (p1 is not None) and p1.type == 'mem':
-            p1, p3 = p3, p1
-            tx = 0
-        elif p3.type == 'mem': tx = 1
-        elif p3.type == 'const': tx = 2
-        else: tx = 3
-        res |= tx << 20
-        if opcode == opcodes['READ']:
-            if c == 'WRITE': res |= 1 << 22
-        if p1 is not None:
-            if p1.type != 'register': raise Exception('register expected: ' + l)
-            res |= p1.reg << 16
-        if p2.special:
-            if tx != 2: raise Exception('arg2 should be register: ' + l)
-            res |= 1<<9
-        if tx < 2:
-            res |= p3.reg << 8
-            res |= p3.value
-            if p3.all: res |= 128
-        elif tx == 2:
-            v = p3.value % 0x10000
-            if v >> 9 == 0:
-                res |= v
-            elif v >> 9 == 0x7f:
-                res |= v&0x1ff
-                res |= 1 << 11
-            elif v & 0x7f == 0:
-                res |= (v >> 7) & 0x1ff
-                res |= 1 << 10
-            elif v & 0x7f == 0x7f:
-                res |= (v >> 7) & 0x3ff
-                res |= 3 << 10
-            else: raise Exception('incorrect const: ' + l)
-        elif p3.type == 'register':
-            res |= p3.reg << 8
-            if p3.special: res |= 1 << 4
-            if p3.inv: res |= 1 << 7
-        else: raise Exception('Unknown p3 type: ' + l)
-    res |= opcode << 23
-    fout.write(struct.pack('<I', res))
-    print '0x%06X:       %02X %02X %02X %02X         %s' % (real_addr, (res>>24)&255, (res>>16)&255, (res>>8)&255, res&255, l)
-    addr += 2
-    real_addr += 2
-fout.close()
+            if params[1].type != 'const': raise Exception('const expected: ' + l)
+            if params[0].type != 'register' or params[0].inv: raise Exception('register expected: ' + l)
+            res |= params[0].reg << 16
+            res |= params[1].value & 0xffff
+            if params[0].special:
+                res |= 1 << 20
+        elif opcode == opcodes['CCMOV']:
+            if len(params) != 2: raise Exception('2 args expected: ' + l)
+            if params[1].type != 'const': raise Exception('const expected: ' + l)
+            if params[0].type != 'mem': raise Exception('cache expr expected: ' + l)
+            if params[0].value < 0 or params[0].value > 7: raise Exception('incorrect offset for CCMOV: ' + l)
+            res |= params[0].reg << 8
+            res |= params[0].value << 20
+            res |= params[1].value & 0xff
+            res |= (params[1].value & 0xff00) << 4
+        else:
+            if opcode == opcodes['MOV'] or opcode == opcodes['RGBSHR']:
+                if len(params) != 2: raise Exception('2 args expected: ' + l)
+                if c == 'IN' or c == 'OUT':
+                    if params[0].type != 'const': raise Exception('const expected: ' + l)
+                    params[0] = Param('r%d' % params[0].value)
+                    if cond != 0: raise Exception('Unexpected condition: ' + l)
+                p1 = params[0]
+                p3 = params[1]
+                if c == 'IN':
+                    if params[1].type == 'const':
+                        raise Exception('Unexpected const: ' + l)
+                    p3 = params[0]
+                    p1 = params[1]
+                    p2 = Param('r2')
+                elif c == 'OUT':
+                    p2 = Param('r3')
+                elif p1.special or (p3.special and p1.type != 'register'):
+                    p2 = Param('r1')
+                else:
+                    p2 = Param('r0')
+            elif len(params) == 2:
+                if opcode not in [opcodes[x] for x in ['CMP', 'TST', 'MUL', 'SHL', 'SHR', 'READ']]:
+                    raise Exception('incorrect args count: ' + l)
+                p1 = None
+                p2 = params[0]
+                p3 = params[1]
+            elif len(params) == 3:
+                if opcode in [opcodes[x] for x in ['CMP', 'TST', 'MUL', 'SHL', 'SHR', 'READ']]:
+                    raise Exception('incorrect args count: ' + l)
+                p1 = params[0]
+                p2 = params[1]
+                p3 = params[2]
+            else: raise Exception('incorrect args count: ' + l)
+            if p2.type != 'register': raise Exception('arg2 should be register: ' + l)
+            res |= p2.reg << 12
+            if (p1 is not None) and p1.type == 'mem':
+                p1, p3 = p3, p1
+                tx = 0
+            elif p3.type == 'mem': tx = 1
+            elif p3.type == 'const': tx = 2
+            else: tx = 3
+            res |= tx << 20
+            if opcode == opcodes['READ']:
+                if c == 'WRITE': res |= 1 << 22
+            if p1 is not None:
+                if p1.type != 'register': raise Exception('register expected: ' + l)
+                res |= p1.reg << 16
+            if p2.special:
+                if tx != 2: raise Exception('arg2 should be register: ' + l)
+                res |= 1<<9
+            if tx < 2:
+                res |= p3.reg << 8
+                res |= p3.value
+                if p3.all: res |= 128
+            elif tx == 2:
+                v = p3.value % 0x10000
+                if v >> 9 == 0:
+                    res |= v
+                elif v >> 9 == 0x7f:
+                    res |= v&0x1ff
+                    res |= 1 << 11
+                elif v & 0x7f == 0:
+                    res |= (v >> 7) & 0x1ff
+                    res |= 1 << 10
+                elif v & 0x7f == 0x7f:
+                    res |= (v >> 7) & 0x3ff
+                    res |= 3 << 10
+                else: raise Exception('incorrect const: ' + l)
+            elif p3.type == 'register':
+                res |= p3.reg << 8
+                if p3.special: res |= 1 << 4
+                if p3.inv: res |= 1 << 7
+            else: raise Exception('Unknown p3 type: ' + l)
+        res |= opcode << 23
+        fout.write(struct.pack('<I', res))
+        if verbose: print '0x%06X:       %02X %02X %02X %02X         %s' % (real_addr, (res>>24)&255, (res>>16)&255, (res>>8)&255, res&255, l)
+        addr += 2
+        real_addr += 2
+    fout.close()
 

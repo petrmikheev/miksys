@@ -5,7 +5,7 @@ QTSIM = qt_sim/qt_sim
 all: \
 	$(QTSIM) \
 	verilog/miksys.svf verilog/miksys_epcs4.svf \
-	demo3d demoIO
+	lcc demo3d demoIO
 
 verilog/startup/startup.hex miksys_soft/ustartup/startup.bin: miksys_soft/ustartup/*.S miksys_soft/include/*.H
 	$(MAKE) -C miksys_soft/ustartup
@@ -53,13 +53,18 @@ demo3d: miksys_soft/ustartup/startup.bin
 demoIO: miksys_soft/ustartup/startup.bin
 	$(MAKE) -C miksys_soft/demoIO
 
-sim_demo3d: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demo3d/demo3d.packed
+sim_demo3d: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demo3d/demo3d.packed demo3d
 	cp miksys_soft/demo3d/demo3d.packed miksys_soft/serial_in
 	cd qt_sim && ./qt_sim
 
-sim_demoIO: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demoIO/demo.packed
+sim_demoIO: $(QTSIM) miksys_soft/ustartup/startup.bin miksys_soft/demoIO/demo.packed demoIO
 	cp miksys_soft/demoIO/demo.packed miksys_soft/serial_in
 	cd qt_sim && ./qt_sim
+
+.PHONY: lcc
+lcc:
+	mkdir -p miksys_soft/lcc/build
+	$(MAKE) -C miksys_soft/lcc rcc cpp
 
 .PHONY: clean
 clean:
@@ -68,3 +73,4 @@ clean:
 	$(MAKE) -C miksys_soft/ustartup clean
 	$(MAKE) -C miksys_soft/demo3d clean
 	$(MAKE) -C miksys_soft/demoIO clean
+	$(MAKE) -C miksys_soft/lcc clean
