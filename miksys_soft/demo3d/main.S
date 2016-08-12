@@ -182,9 +182,9 @@ mouse_end:
         #else
         TST r0, 1
         #endif
-        CMOVEQ r0, (MEMORY_TEXT_BUF2 / 256) % 256
+        CMOVEQ r6, (MEMORY_TEXT_BUF2 / 256) % 256
         CMOVEQ r1, MEMORY_TEXT_BUF2 / 65536
-        CMOVNE r0, (MEMORY_TEXT_BUF1 / 256) % 256
+        CMOVNE r6, (MEMORY_TEXT_BUF1 / 256) % 256
         CMOVNE r1, MEMORY_TEXT_BUF1 / 65536
         CMOVEQ r2, (MEMORY_COLOR_BUF2 / 256) % 256
         CMOVEQ r3, MEMORY_COLOR_BUF2 / 65536
@@ -196,7 +196,7 @@ mouse_end:
         CMOVEQ r5, HI(MEMORY_TEXT_BUF2 + 128 * 33)
         CMOVNE r5, HI(MEMORY_TEXT_BUF1 + 128 * 33)
         show_state r9, r8
-        OUT DEV_VGA, r0
+        OUT DEV_VGA, r6
         OUT DEV_VGA, r1
         OUT DEV_VGA, 0
         OUT DEV_VGA, r2

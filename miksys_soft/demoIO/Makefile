@@ -1,7 +1,7 @@
 all: demo.packed demo.usb_packed
 
 demo.bin: demo.S ../include/*.H
-	../compile.py demo.S demo.bin
+	../miksys_asm.py demo.S demo.bin
 	cat picture.img >> demo.bin
 
 demo.packed: demo.bin

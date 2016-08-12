@@ -8,12 +8,10 @@
 #define mem_hi r13
 #define COLOR r2
 #define SCREEN_WIDTH_S4 r11
-.code 0x0
-            OUT DEV_VGA, 0
+.code 0 0
             OUT DEV_VGA, 0
             OUT DEV_VGA, 0
             OUT DEV_VGA, 128
-            OUT DEV_VGA, 0
             OUT DEV_VGA, 0
             OUT DEV_VGA, 0
             OUT DEV_VGA, 0
@@ -38,12 +36,12 @@ loop_x:     ADD tmp, X, Y
             MOV MEM_ADDR_LO, mem_lo
             MOV MEM_ADDR_HI, mem_hi
             CMOV tmp, 0
-            TST IN_FLAGS, RAM_FLAG
+            TST IN_FLAGS, MEM_FLAG
 wait_ram:   JNE wait_ram
                 WRITEEQ tmp, SCREEN_WIDTH
                 CMPEQ Y, SCREEN_HEIGHT-1
                 JMI loop_y
-                TST IN_FLAGS, RAM_FLAG
+                TST IN_FLAGS, MEM_FLAG
                 ADD Y, Y, 1
                 NOP
                 NOP

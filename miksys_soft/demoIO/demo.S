@@ -142,6 +142,7 @@ keyboard:
         MOV r14, [r5 + (text_pointer - keyboard_settings)]
         MOVS r8, [r15+1]
         ADD r9, r8, r9
+        MOV r0, 0
         JEQ l
             CMOVEQ MEM_ADDR_LO, 128
             CMOVEQ MEM_ADDR_HI, 0

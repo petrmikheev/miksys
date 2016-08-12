@@ -1,7 +1,7 @@
 all: demo3d.packed demo3d.usb_packed
 
 demo3d.bin: *.S *.H ../include/*.H
-	../compile.py main.S demo3d.bin
+	../miksys_asm.py main.S demo3d.bin
 	cat textures/brick.bin textures/roof.bin textures/wood.bin textures/window.bin >> demo3d.bin
 
 demo3d.packed: demo3d.bin
