@@ -1,5 +1,5 @@
 #!/bin/bash
-../compile.py startup.S startup.bin > tmp
+../miksys_asm.py -v startup.S startup.bin > tmp
 for func in divide_func set_number_base_func printf_func usb_request_func ; do
 	addr=`grep "$func = " tmp | cut -d ' ' -f 3`
 	echo $func : $addr
