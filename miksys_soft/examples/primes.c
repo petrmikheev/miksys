@@ -17,7 +17,7 @@ char buf[128];
 
 void main() {
     unsigned i = 1;
-    int line = 0;
+    unsigned mem_addr = 0;
     char* str = buf;
     register unsigned *p = primes;
     unsigned count = 0;
@@ -28,9 +28,9 @@ void main() {
             primes_count = ++count;
             str = print(str, "    %U ", TEXT_GREEN, i);
             if ((count&15) == 0) {
-                sdram(SDRAM_WRITE, buf, str-buf, line*128, 0);
+                sdram(SDRAM_WRITE, buf, str-buf, mem_addr, 0);
                 str = buf;
-                line++;
+                mem_addr += 128;
             }
         }
         

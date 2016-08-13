@@ -87,6 +87,12 @@ stmt: JUMPV(cnst) "DJ %0\n"
 stmt: ARGI1(reg) "# arg\n" 1
 stmt: ARGU1(reg) "# arg\n" 1
 stmt: ARGP1(reg) "# arg\n" 1
+
+stmt: ARGI1(CNSTI1) "# arg\n"
+stmt: ARGU1(CNSTU1) "# arg\n"
+stmt: ARGP1(CNSTP1) "# arg\n"
+stmt: ARGP1(ADDRGP1) "# arg\n"
+
 stmt: CALLV(ADDRGP1) "# call\n"
 reg: CALLI1(ADDRGP1) "# call\n"
 reg: CALLU1(ADDRGP1) "# call\n"
@@ -233,7 +239,7 @@ static void progbeg(int argc, char *argv[]) {
         intregw = mkwildcard(intreg);
         longregw = mkwildcard(longreg);
         tmask[IREG] = 0x3fff;
-        vmask[IREG] = 0x00e0;
+        vmask[IREG] = 0x07e0;
         tmask[FREG] = 0;
         vmask[FREG] = 0;
         cseg = 0;
@@ -293,16 +299,33 @@ static void clobber(Node p) {
         case CALL+I: case CALL+U: case CALL+P: case CALL+V:
                 spill(0x3f1e, IREG, p);
                 break;
+        case ARG+I: case ARG+U: case ARG+P:
+                spill(1, IREG, p);
+                break;
         }
 }
 
 static void emit2(Node p) {
         switch (generic(p->op)) {
         case ARG:
-            print("MOV [_rr+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+            if (next_arg_offset < 8) {
+                if (generic(p->kids[0]->op)==CNST)
+                    print("CCMOV [r15+%d], 0x%x\n", next_arg_offset++, p->kids[0]->syms[0]->u.c.v.u);
+                else if (generic(p->kids[0]->op)==ADDRG)
+                    print("CCMOV [r15+%d], %s\n", next_arg_offset++, p->kids[0]->syms[0]->x.name);
+                else
+                    print("MOV [r15+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+            } else {
+                if (generic(p->kids[0]->op)==CNST)
+                    print("CMOV r0, 0x%x\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->u.c.v.u, next_arg_offset++);
+                else if (generic(p->kids[0]->op)==ADDRG)
+                    print("CMOV r0, %s\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->x.name, next_arg_offset++);
+                else
+                    print("CMOV r0, %s\nMOV [r15+%d], r0\n", intreg[getregnum(p->x.kids[0])]->x.name, next_arg_offset++);
+            }
             break;
         case CALL:
-            next_arg_offset = framesize;
+            next_arg_offset = 0;
             print("DCALL %s\n", p->kids[0]->syms[0]->x.name);
             break;
         }
@@ -330,11 +353,12 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int n) {
         gencode(caller, callee);
         
         print("%s:\n", f->x.name);
-        maxoffset += 3;
-        print("MOV [r15+%d], r5\n", maxoffset-3);
-        print("MOV [r15+%d], r6\n", maxoffset-2);
-        print("MOV [r15+%d], r7\n", maxoffset-1);
-        next_arg_offset = framesize = maxoffset;
+        for (i = 0; i < 32; ++i) {
+            if (usedmask[IREG] & vmask[IREG] & (1<<i))
+                print("MOV [r15+%d], r%d\n", maxoffset++, i);
+        }
+        next_arg_offset = 0;
+        framesize = maxoffset;
         if (n>0) {
                 print("#define _rr r14\n");
                 print("MOV [r15+%d], r14\n", params);
@@ -346,9 +370,10 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int n) {
                 print("MOV [r15+%d], MEM_ADDR_HI\n", params+2);
         }
         emitcode();
-        print("MOV r5, [r15+%d]\n", maxoffset-3);
-        print("MOV r6, [r15+%d]\n", maxoffset-2);
-        print("MOV r7, [r15+%d]\n", maxoffset-1);
+        for (i = 31; i >= 0; --i) {
+            if (usedmask[IREG] & vmask[IREG] & (1<<i))
+                print("MOV r%d, [_rr+%d]\n", i, --maxoffset);
+        }
         if (n>0 || has_hidden_call) {
                 print("MOV MEM_ADDR_LO, [_rr+%d]\n", params+1);
                 print("MOV MEM_ADDR_HI, [_rr+%d]\n", params+2);
