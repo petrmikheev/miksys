@@ -28,8 +28,7 @@ void sdram_stats(unsigned * work, unsigned * idle);
 #define SDRAM_READ 0
 #define SDRAM_WRITE 1
 /* Обмен данным с микросхемой sdram */
-//void sdram(unsigned op, void* buf, unsigned long addr, unsigned size);
-void sdram(unsigned op, void* buf, unsigned size, unsigned addr_lo, unsigned addr_hi);
+void sdram(unsigned op, void* buf, unsigned size, long addr);
 
 #define NUM2STR_LEFT 0x100
 #define NUM2STR_SIGN 0x200

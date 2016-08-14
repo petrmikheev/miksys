@@ -29,39 +29,40 @@ extern void stabtype(Symbol);
 %start stmt
 
 %term ADDRGP1=1287 ADDRFP1=1303 ADDRLP1=1319
-%term CNSTI1=1045 CNSTU1=1046 CNSTP1=1047
-%term INDIRI1=1093 INDIRU1=1094 INDIRP1=1095
-%term ASGNI1=1077 ASGNU1=1078 ASGNP1=1079
-%term RETI1=1269 RETU1=1270 RETP1=1271
-%term LOADI1=1253 LOADU1=1254 LOADP1=1255
+%term CNSTI1=1045 CNSTU1=1046 CNSTP1=1047 CNSTI2=2069 CNSTU2=2070
+%term INDIRI1=1093 INDIRU1=1094 INDIRP1=1095 INDIRI2=2117 INDIRU2=2118
+%term ASGNI1=1077 ASGNU1=1078 ASGNP1=1079 ASGNI2=2101 ASGNU2=2102
+%term RETI1=1269 RETU1=1270 RETP1=1271 RETI2=2293 RETU2=2294
+%term LOADI1=1253 LOADU1=1254 LOADP1=1255 LOADI2=2277 LOADU2=2278
 
-%term ADDI1=1333 ADDU1=1334 ADDP1=1335
-%term SUBI1=1349 SUBU1=1350 SUBP1=1351
+%term ADDI1=1333 ADDU1=1334 ADDP1=1335 ADDI2=2357 ADDU2=2358
+%term SUBI1=1349 SUBU1=1350 SUBP1=1351 SUBI2=2373 SUBU2=2374
 %term DIVI1=1477 DIVU1=1478
 %term MODI1=1381 MODU1=1382
-%term BANDI1=1413 BANDU1=1414
-%term BORI1=1445 BORU1=1446
-%term BXORI1=1461 BXORU1=1462
-%term BCOMI1=1429 BCOMU1=1430
-%term NEGI1=1221
-%term LSHI1=1365 LSHU1=1366
-%term RSHI1=1397 RSHU1=1398
-%term MULI1=1493 MULU1=1494
+%term BANDI1=1413 BANDU1=1414 BANDI2=2137 BANDU2=2138
+%term BORI1=1445 BORU1=1446 BORI2=2469 BORU2=2470
+%term BXORI1=1461 BXORU1=1462 BXORI2=2485 BXORU2=2486
+%term BCOMI1=1429 BCOMU1=1430 BCOMI2=2453 BCOMU2=2454
+%term NEGI1=1221 NEGI2=2045
+%term LSHI1=1365 LSHU1=1366 LSHI2=2389 LSHU2=2390
+%term RSHI1=1397 RSHU1=1398 RSHI2=2421 RSHU2=2422
+%term MULI1=1493 MULU1=1494 MULI2=2517 MULU2=2518
 
-%term EQI1=1509 EQU1=1510
-%term NEI1=1589 NEU1=1590
-%term GEI1=1525 GEU1=1526
-%term GTI1=1541 GTU1=1542
-%term LEI1=1557 LEU1=1558
-%term LTI1=1573 LTU1=1574
+%term EQI1=1509 EQU1=1510 EQI2=2533 EQU2=2534
+%term NEI1=1589 NEU1=1590 NEI2=2613 NEU2=2614
+%term GEI1=1525 GEU1=1526 GEI2=2549 GEU2=2550
+%term GTI1=1541 GTU1=1542 GTI2=2565 GTU2=2566
+%term LEI1=1557 LEU1=1558 LEI2=2581 LEU2=2582
+%term LTI1=1573 LTU1=1574 LTI2=2597 LTU2=2598
 
-%term CALLV=216 CALLI1=1237 CALLU1=1238 CALLP1=1239
-%term ARGI1=1061 ARGU1=1062 ARGP1=1063
+%term CALLV=216 CALLI1=1237 CALLU1=1238 CALLP1=1239 CALLI2=2261 CALLU2=2262
+%term ARGI1=1061 ARGU1=1062 ARGP1=1063 ARGI2=2085 ARGU2=2086
 
 %term LABELV=600
 %term JUMPV=584
 %term VREGP=711
-%term CVUI2=2229
+%term CVII2=2181 CVIU2=2182
+%term CVUI2=2229 CVUU2=2230
 
 %%
 
@@ -71,14 +72,21 @@ one: CNSTI1 "%a" a->syms[0]->u.c.v.u==1 ? 0 : LBURG_MAX
 cnst8: CNSTI1 "%a" a->syms[0]->u.c.v.u<8 ? 0 : LBURG_MAX
 cnst8: CNSTU1 "%a" a->syms[0]->u.c.v.u<8 ? 0 : LBURG_MAX
 cnst8: CNSTP1 "%a" a->syms[0]->u.c.v.u<8 ? 0 : LBURG_MAX
+cnst7: CNSTI1 "%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
+cnst7: CNSTU1 "%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
+cnst7: CNSTP1 "%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
 cnst128: CNSTI1 "%a" a->syms[0]->u.c.v.u<128 ? 0 : LBURG_MAX
 cnst128: CNSTU1 "%a" a->syms[0]->u.c.v.u<128 ? 0 : LBURG_MAX
 cnst128: CNSTP1 "%a" a->syms[0]->u.c.v.u<128 ? 0 : LBURG_MAX
 cnst_short: CNSTI1 "%a" is_cnst_short(a->syms[0]->u.c.v.u) ? 0 : LBURG_MAX
 cnst_short: CNSTU1 "%a" is_cnst_short(a->syms[0]->u.c.v.u) ? 0 : LBURG_MAX
+cnst_short2: CNSTI2 "%a" is_cnst_short(a->syms[0]->u.c.v.u&0xffff)&&is_cnst_short(a->syms[0]->u.c.v.u>>16) ? 0 : LBURG_MAX
+cnst_short2: CNSTU2 "%a" is_cnst_short(a->syms[0]->u.c.v.u&0xffff)&&is_cnst_short(a->syms[0]->u.c.v.u>>16) ? 0 : LBURG_MAX
 cnst_short: CNSTP1 "%a" is_cnst_short(a->syms[0]->u.c.v.u) ? 0 : LBURG_MAX
 cnst: CNSTI1 "%a"
 cnst: CNSTU1 "%a"
+cnst: CNSTI2 "%a"
+cnst: CNSTU2 "%a"
 cnst: CNSTP1 "%a"
 cnst: ADDRGP1 "%a"
 
@@ -86,36 +94,51 @@ stmt: LABELV "%a:\n"
 stmt: JUMPV(cnst) "DJ %0\n"
 stmt: ARGI1(reg) "# arg\n" 1
 stmt: ARGU1(reg) "# arg\n" 1
+stmt: ARGI2(reg2) "# arg\n" 1
+stmt: ARGU2(reg2) "# arg\n" 1
 stmt: ARGP1(reg) "# arg\n" 1
-
 stmt: ARGI1(CNSTI1) "# arg\n"
 stmt: ARGU1(CNSTU1) "# arg\n"
+stmt: ARGI2(CNSTI2) "# arg\n"
+stmt: ARGU2(CNSTU2) "# arg\n"
 stmt: ARGP1(CNSTP1) "# arg\n"
 stmt: ARGP1(ADDRGP1) "# arg\n"
 
-stmt: CALLV(ADDRGP1) "# call\n"
-reg: CALLI1(ADDRGP1) "# call\n"
-reg: CALLU1(ADDRGP1) "# call\n"
-reg: CALLP1(ADDRGP1) "# call\n"
+stmt: CALLV(ADDRGP1) "# call %a\n"
+reg: CALLI1(ADDRGP1) "# call %a\n"
+reg: CALLU1(ADDRGP1) "# call %a\n"
+reg2: CALLI2(ADDRGP1) "# call %a\n"
+reg2: CALLU2(ADDRGP1) "# call %a\n"
+reg: CALLP1(ADDRGP1) "# call %a\n"
 
 stmt: RETI1(creg) "# RETI1 %0\n"
 stmt: RETU1(creg) "# RETU1 %0\n"
+stmt: RETI2(creg2) "# RETI1 %0\n"
+stmt: RETU2(creg2) "# RETU1 %0\n"
 stmt: RETP1(creg) "# RETP1 %0\n"
 stmt: RETI1(reg) "MOV %c, %0\n" 1
 stmt: RETU1(reg) "MOV %c, %0\n" 1
+stmt: RETI2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
+stmt: RETU2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
 stmt: RETP1(reg) "MOV %c, %0\n" 1
 
 stmt: ASGNI1(VREGP, creg) "# write reg\n"
 stmt: ASGNU1(VREGP, creg) "# write reg\n"
+stmt: ASGNI2(VREGP, creg2) "# write reg\n"
+stmt: ASGNU2(VREGP, creg2) "# write reg\n"
 stmt: ASGNP1(VREGP, creg) "# write_reg\n"
 stmt: ASGNI1(ccmov_addr, cnst) "CCMOV __CACHE__[%0], %1\n"
 stmt: ASGNU1(ccmov_addr, cnst) "CCMOV __CACHE__[%0], %1\n"
+stmt: ASGNI2(ccmov_addr2, cnst) "CCMOV __CACHE__[%0], LO(%1)\nCCMOV __CACHE__HI([%0]), HI(%1)\n"
+stmt: ASGNU2(ccmov_addr2, cnst) "CCMOV __CACHE__[%0], LO(%1)\nCCMOV __CACHE__HI([%0]), HI(%1)\n"
 stmt: ASGNP1(ccmov_addr, cnst) "CCMOV __CACHE__[%0], %1\n"
 stmt: ASGNI1(addr, reg) "MOV __CACHE__[%0], %1\n" 1
 stmt: ASGNU1(addr, reg) "MOV __CACHE__[%0], %1\n" 1
+stmt: ASGNI2(addr, reg2) "MOV __CACHE__[%0], %1\nMOV __CACHE__HI([%0]), HI(%1)\n" 1
+stmt: ASGNU2(addr, reg2) "MOV __CACHE__[%0], %1\nMOV __CACHE__HI([%0]), HI(%1)\n" 1
 stmt: ASGNP1(addr, reg) "MOV __CACHE__[%0], %1\n" 1
 
-addr: reg "__ADDR__%0" 1
+addr: reg "__ADDR__%0+0" 1
 addr: ADDRLP1 "_rr+%a"
 addr: ADDRFP1 "_rr+%a"
 addr: ADDI1(reg, cnst128) "__ADDR__%0+%1"
@@ -126,6 +149,11 @@ ccmov_addr: ADDU1(reg, cnst8) "__ADDR__%0+%1"
 ccmov_addr: ADDP1(reg, cnst8) "__ADDR__%0+%1"
 ccmov_addr: ADDRLP1 "_rr+%a" a->syms[0]->u.c.v.u<8 ? 0 : LBURG_MAX
 ccmov_addr: ADDRFP1 "_rr+%a" a->syms[0]->u.c.v.u<8 ? 0 : LBURG_MAX
+ccmov_addr2: ADDI1(reg, cnst7) "__ADDR__%0+%1"
+ccmov_addr2: ADDU1(reg, cnst7) "__ADDR__%0+%1"
+ccmov_addr2: ADDP1(reg, cnst7) "__ADDR__%0+%1"
+ccmov_addr2: ADDRLP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
+ccmov_addr2: ADDRFP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
 
 op: cnst_short "%0"
 op: INDIRI1(addr) "[%0]"
@@ -134,15 +162,34 @@ op: INDIRP1(addr) "[%0]"
 op: reg "__SWAP__%0" 1
 op: BCOMI1(reg) "NOT __NSWAP__%0"
 op: BCOMU1(reg) "NOT __NSWAP__%0"
+op2: cnst_short2 "%0"
+op2: INDIRI2(addr) "[%0]"
+op2: INDIRU2(addr) "[%0]"
+op2: reg2 "%0"
+op2: BCOMI2(reg2) "NOT %0"
+op2: BCOMU2(reg2) "NOT %0"
 
 reg: creg "%0" 1
+reg2: creg2 "%0" 1
 reg: LOADI1(reg) "%0"
 reg: LOADU1(reg) "%0"
 reg: LOADP1(reg) "%0"
+reg: LOADI1(reg2) "%0" 1
+reg: LOADU1(reg2) "%0" 1
+reg: LOADP1(reg2) "%0" 1
+reg2: LOADI2(reg2) "%0"
+reg2: LOADU2(reg2) "%0"
 reg: CVUI2(reg) "%0"
 reg: INDIRI1(VREGP) "# read reg\n"
 reg: INDIRU1(VREGP) "# read reg\n"
+reg2: INDIRI2(VREGP) "# read reg\n"
+reg2: INDIRU2(VREGP) "# read reg\n"
 reg: INDIRP1(VREGP) "# read reg\n"
+
+creg2: CVII2(reg) "MOVS %c, %0\nMOVPL HI(%c), 0\nMOVMI HI(%c), 0xffff\n"
+creg2: CVUI2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
+creg2: CVIU2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
+creg2: CVUU2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
 
 reg: DIVI1(creg, creg) "XOR r4, r0, r1\nCALL divide_func\nCMP r0, 0\nRSBMI r0, r0, 0\nCMP r1, 0\nRSBMI r1, r1, 0\n__:\nCMP r4, 0\nRSBMI r1, r1, 0\n"
 reg: DIVU1(creg, creg) "DCALL divide_func\n"
@@ -154,17 +201,25 @@ creg: ADDRFP1 "ADDS %c, _rr, %a\n"
 creg: ADDRGP1 "CMOV %c, %a\n"
 creg: CNSTI1 "CMOV %c, %a\n"
 creg: CNSTU1 "CMOV %c, %a\n"
+creg2: CNSTI2 "CMOV %c, LO(%a)\nCMOV HI(%c), HI(%a)\n"
+creg2: CNSTU2 "CMOV %c, LO(%a)\nCMOV HI(%c), HI(%a)\n"
 creg: CNSTP1 "CMOV %c, %a\n"
 
 creg: INDIRI1(addr) "MOVS %c, [%0]\n"
 creg: INDIRU1(addr) "MOVS %c, [%0]\n"
+creg2: INDIRI2(addr) "MOV %c, [%0]\nMOV HI(%c), HI([%0])\n"
+creg2: INDIRU2(addr) "MOV %c, [%0]\nMOV HI(%c), HI([%0])\n"
 creg: INDIRP1(addr) "MOVS %c, [%0]\n"
 
 creg: LOADI1(reg) "MOVS %c, %0\n" 1
 creg: LOADU1(reg) "MOVS %c, %0\n" 1
+creg2: LOADI2(reg2) "MOV %c, %0\nMOV %ch, %0h\n" 1
+creg2: LOADU2(reg2) "MOV %c, %0\nMOV %ch, %0h\n" 1
 creg: LOADP1(reg) "MOVS %c, %0\n" 1
 creg: LOADI1(creg) "%0"
 creg: LOADU1(creg) "%0"
+creg2: LOADI2(creg2) "%0"
+creg2: LOADU2(creg2) "%0"
 creg: LOADP1(creg) "%0"
 
 creg: ADDI1(reg, op) "ADDS %c, %0, %1\n"
@@ -179,6 +234,21 @@ creg: SUBP1(reg, op) "SUBS %c, %0, %1\n"
 creg: SUBI1(op, reg) "RSBS %c, %1, %0\n" 1
 creg: SUBU1(op, reg) "RSBS %c, %1, %0\n" 1
 creg: SUBP1(op, reg) "RSBS %c, %1, %0\n" 1
+
+creg2: ADDI2(reg2, op2) "ADD %c, %0, LO(%1)\nADC HI(%c), HI(%0), HI(%1)\n"
+creg2: ADDU2(reg2, op2) "ADD %c, %0, LO(%1)\nADC HI(%c), HI(%0), HI(%1)\n"
+creg2: SUBI2(reg2, op2) "SUB %c, %0, LO(%1)\nSBC HI(%c), HI(%0), HI(%1)\n"
+creg2: SUBU2(reg2, op2) "SUB %c, %0, LO(%1)\nSBC HI(%c), HI(%0), HI(%1)\n"
+creg2: BANDI2(reg2, op2) "AND %c, %0, LO(%1)\nAND HI(%c), HI(%0), HI(%1)\n"
+creg2: BANDU2(reg2, op2) "AND %c, %0, LO(%1)\nAND HI(%c), HI(%0), HI(%1)\n"
+creg2: BORI2(reg2, op2) "OR %c, %0, LO(%1)\nOR HI(%c), HI(%0), HI(%1)\n"
+creg2: BORU2(reg2, op2) "OR %c, %0, LO(%1)\nOR HI(%c), HI(%0), HI(%1)\n"
+creg2: BXORI2(reg2, op2) "XOR %c, %0, LO(%1)\nXOR HI(%c), HI(%0), HI(%1)\n"
+creg2: BXORU2(reg2, op2) "XOR %c, %0, LO(%1)\nXOR HI(%c), HI(%0), HI(%1)\n"
+
+creg2: BCOMI2(reg2) "MOV %c, NOT %0\nMOV %ch, NOT %0h\n"
+creg2: BCOMU2(reg2) "MOV %c, NOT %0\nMOV %ch, NOT %0h\n"
+creg2: NEGI2(reg2) "RSB %c, %0, 0\nRSC %ch, %0h, 0\n"
 
 creg: BANDI1(reg, op) "ANDS %c, %0, %1\n"
 creg: BANDU1(reg, op) "ANDS %c, %0, %1\n"
@@ -223,6 +293,22 @@ stmt: LEU1(reg, op) "CMP %0, %1\nDJLS %a\n"
 stmt: LTI1(reg, op) "CMP %0, %1\nDJLT %a\n"
 stmt: LTU1(reg, op) "CMP %0, %1\nDJCC %a\n"
 
+stmt: EQI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJEQ %a\n"
+stmt: EQU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJEQ %a\n"
+stmt: NEI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJNE %a\n"
+stmt: NEU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJNE %a\n"
+stmt: GEI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJGE %a\n"
+stmt: GEU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJCS %a\n"
+stmt: GTI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJGT %a\n"
+stmt: GTU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJHI %a\n"
+stmt: LEI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJLE %a\n"
+stmt: LEU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJLS %a\n"
+stmt: LTI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJLT %a\n"
+stmt: LTU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJCC %a\n"
+
+stmt: creg "# stmt creg" 5
+stmt: creg2 "# stmt creg2" 5
+
 %%
 
 static void progbeg(int argc, char *argv[]) {
@@ -238,8 +324,8 @@ static void progbeg(int argc, char *argv[]) {
         for (i = 0; i < 14; i+=2) longreg[i] = mkreg("r%d", i, 3, IREG);
         intregw = mkwildcard(intreg);
         longregw = mkwildcard(longreg);
-        tmask[IREG] = 0x3fff;
-        vmask[IREG] = 0x07e0;
+        tmask[IREG] = 0x303e;
+        vmask[IREG] = 0x0fc0;
         tmask[FREG] = 0;
         vmask[FREG] = 0;
         cseg = 0;
@@ -266,9 +352,10 @@ static void deep_target(Node p, int n, Symbol r) {
 
 static void target(Node p) {
         assert(p);
+        Symbol* regs = opsize(p->op) == 2 ? longreg : intreg;
         switch (generic(p->op)) {
         case RET:
-                deep_target(p, 0, intreg[0]);
+                deep_target(p, 0, regs[0]);
                 setreg(p, intreg[0]);
                 break;
         case DIV: case MOD:
@@ -280,7 +367,7 @@ static void target(Node p) {
                         setreg(p, intreg[1]);
                 break;
         case CALL:
-                setreg(p, intreg[0]);
+                setreg(p, regs[0]);
                 break;
         }
 }
@@ -297,7 +384,7 @@ static void clobber(Node p) {
                         spill(1, IREG, p);
                 break;
         case CALL+I: case CALL+U: case CALL+P: case CALL+V:
-                spill(0x3f1e, IREG, p);
+                spill(tmask[IREG]&(opsize(p->op) == 2 ? ~3 : ~1), IREG, p);
                 break;
         case ARG+I: case ARG+U: case ARG+P:
                 spill(1, IREG, p);
@@ -308,20 +395,33 @@ static void clobber(Node p) {
 static void emit2(Node p) {
         switch (generic(p->op)) {
         case ARG:
-            if (next_arg_offset < 8) {
-                if (generic(p->kids[0]->op)==CNST)
-                    print("CCMOV [r15+%d], 0x%x\n", next_arg_offset++, p->kids[0]->syms[0]->u.c.v.u);
-                else if (generic(p->kids[0]->op)==ADDRG)
-                    print("CCMOV [r15+%d], %s\n", next_arg_offset++, p->kids[0]->syms[0]->x.name);
-                else
-                    print("MOV [r15+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+            if (opsize(p->op)==1) {
+                if (generic(p->kids[0]->op)==CNST || generic(p->kids[0]->op)==ADDRG) {
+                    if (next_arg_offset < 8) {
+                        if (generic(p->kids[0]->op)==CNST)
+                            print("CCMOV [r15+%d], 0x%x\n", next_arg_offset++, p->kids[0]->syms[0]->u.c.v.u);
+                        else
+                            print("CCMOV [r15+%d], %s\n", next_arg_offset++, p->kids[0]->syms[0]->x.name);
+                    } else {
+                        if (generic(p->kids[0]->op)==CNST)
+                            print("CMOV r0, 0x%x\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->u.c.v.u, next_arg_offset++);
+                        else
+                            print("CMOV r0, %s\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->x.name, next_arg_offset++);
+                    }
+                } else print("MOV [r15+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
             } else {
-                if (generic(p->kids[0]->op)==CNST)
-                    print("CMOV r0, 0x%x\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->u.c.v.u, next_arg_offset++);
-                else if (generic(p->kids[0]->op)==ADDRG)
-                    print("CMOV r0, %s\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->x.name, next_arg_offset++);
-                else
-                    print("CMOV r0, %s\nMOV [r15+%d], r0\n", intreg[getregnum(p->x.kids[0])]->x.name, next_arg_offset++);
+                if (generic(p->kids[0]->op)==CNST) {
+                    if (next_arg_offset < 7) {
+                        print("CCMOV [r15+%d], LO(0x%x)\n", next_arg_offset++, p->kids[0]->syms[0]->u.c.v.u);
+                        print("CCMOV [r15+%d], HI(0x%x)\n", next_arg_offset++, p->kids[0]->syms[0]->u.c.v.u);
+                    } else {
+                        print("CMOV r0, LO(0x%x)\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->u.c.v.u, next_arg_offset++);
+                        print("CMOV r0, HI(0x%x)\nMOV [r15+%d], r0\n", p->kids[0]->syms[0]->u.c.v.u, next_arg_offset++);
+                    }
+                } else {
+                    print("MOV [r15+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+                    print("MOV [r15+%d], %sh\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+                }
             }
             break;
         case CALL:
@@ -481,8 +581,8 @@ Interface miksysIR = {
         1, 1, 0,  /* char */
         1, 1, 0,  /* short */
         1, 1, 0,  /* int */
-        1/*2*/, 1, 1,  /* long */
-        1/*2*/, 1, 1,  /* long long */
+        2, 1, 0,  /* long */
+        2, 1, 0,  /* long long */
         2, 1, 1,  /* float */
         2, 1, 1,  /* double */
         2, 1, 1,  /* long double */

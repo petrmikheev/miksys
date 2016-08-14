@@ -222,6 +222,11 @@ for l in open(sys.argv[1]).readlines():
             code = []
         else:
             l = re.sub(r"'(\\?.)'", lambda x: eval('str(ord("%s"))' % x.group(1)), l)
+            l = re.sub(r'LO\(([^\)]*)\br(\d+)\s*\)', lambda x: '%sr%d' % (x.group(1), int(x.group(2))), l)
+            l = re.sub(r'HI\(([^\)]*)\br(\d+)\s*\)', lambda x: '%sr%d' % (x.group(1), int(x.group(2))+1), l)
+            l = re.sub(r'\[[^\]]*\]', lambda x: x.group(0).replace(' ', ''), l)
+            l = re.sub(r'LO\(\s*(\[[^\]]*\])\s*\)', lambda x: x.group(1), l)
+            l = re.sub(r'HI\(\s*\[((__ADDR__)?r\d+\+)(\d+)\]\s*\)', lambda x: '[%s%d]' % (x.group(1), int(x.group(3))+1), l)
             if ':' in l:
                 code.append(Command(l[:l.find(':')+1]))
                 c = l[l.find(':')+1:].strip()

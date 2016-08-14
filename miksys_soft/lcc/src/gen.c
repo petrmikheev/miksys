@@ -542,13 +542,15 @@ static Symbol askfixedreg(Symbol s) {
 		return s;
 	}
 }
+int askreg_index = 31;
 static Symbol askreg(Symbol rs, unsigned rmask[]) {
 	int i;
-
 	if (rs->x.wildcard == NULL)
 		return askfixedreg(rs);
+	//askreg_index = 31;
 	for (i = 31; i >= 0; i--) {
-		Symbol r = rs->x.wildcard[i];
+		Symbol r = rs->x.wildcard[askreg_index];
+		askreg_index = (askreg_index-1)&31;
 		if (r != NULL
 		&& !(r->x.regnode->mask&~rmask[r->x.regnode->set])
 		&& askfixedreg(r))

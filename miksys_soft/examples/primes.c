@@ -17,18 +17,20 @@ char buf[128];
 
 void main() {
     unsigned i = 1;
-    unsigned mem_addr = 0;
+    long mem_addr = 0;
     char* str = buf;
     register unsigned *p = primes;
     unsigned count = 0;
     while (count < 640) {
-        if (is_prime(++i)) {
+        i++;
+        if (is_prime(i)) {
             *p = i;
             p++;
-            primes_count = ++count;
+            count++;
+            primes_count = count;
             str = print(str, "    %U ", TEXT_GREEN, i);
             if ((count&15) == 0) {
-                sdram(SDRAM_WRITE, buf, str-buf, mem_addr, 0);
+                sdram(SDRAM_WRITE, buf, str-buf, mem_addr);
                 str = buf;
                 mem_addr += 128;
             }
