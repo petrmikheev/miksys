@@ -90,6 +90,24 @@ def cnst_short(s):
 
 fout = open(sys.argv[2], 'w')
 def handle(code):
+    for j in range(3):
+        aregs = ['','']
+        for i in range(len(code)-1, 0, -1):
+            if code[i].is_link: continue
+            drop = False
+            if i<len(code)-1 and (code[i+1].opcode in ['ADC', 'SBC', 'RSC']): drop = True
+            if code[i-1].is_link or (code[i-1].opcode in ['DJ', 'DCALL', 'DRET']): drop = True
+            if len(code[i].params)>0:
+                if re.search(r'\b(__ADDR__)?%s\b' % code[i].params[0], code[i-1].text): drop = True
+                if code[i].params[0] not in aregs: drop = True
+            if len(code[i].params)>1 and not code[i-1].is_link and len(code[i-1].params)>0:
+                if code[i].opcode != 'CMOV' and (code[i].params[1] == code[i-1].params[0]): drop = True
+            if len(code[i].params)==3 and re.search(r'\br\d+\b|\[', code[i].params[2]) is not None: drop = True
+            if not drop and (code[i].opcode in ['CMOV','ADD','SUB']):
+                code[i-1], code[i] = code[i], code[i-1]
+            a = re.search(r'__ADDR__(r\d+)\b', code[i].text)
+            if a is not None:
+                aregs = [a.group(1), aregs[0]]
     global link_calls
     last_cond = ''
     next_link = ''

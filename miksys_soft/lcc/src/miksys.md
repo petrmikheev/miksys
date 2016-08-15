@@ -154,6 +154,9 @@ ccmov_addr2: ADDU1(reg, cnst7) "__ADDR__%0+%1"
 ccmov_addr2: ADDP1(reg, cnst7) "__ADDR__%0+%1"
 ccmov_addr2: ADDRLP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
 ccmov_addr2: ADDRFP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
+vregp: VREGP "%a"
+ccmov_addr: INDIRP1(vregp) "__ADDR__%0+0"
+ccmov_addr2: INDIRP1(vregp) "__ADDR__%0+0"
 
 op: cnst_short "%0"
 op: INDIRI1(addr) "[%0]"
@@ -213,8 +216,8 @@ creg: INDIRP1(addr) "MOVS %c, [%0]\n"
 
 creg: LOADI1(reg) "MOVS %c, %0\n" 1
 creg: LOADU1(reg) "MOVS %c, %0\n" 1
-creg2: LOADI2(reg2) "MOV %c, %0\nMOV %ch, %0h\n" 1
-creg2: LOADU2(reg2) "MOV %c, %0\nMOV %ch, %0h\n" 1
+creg2: LOADI2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
+creg2: LOADU2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
 creg: LOADP1(reg) "MOVS %c, %0\n" 1
 creg: LOADI1(creg) "%0"
 creg: LOADU1(creg) "%0"
@@ -246,9 +249,9 @@ creg2: BORU2(reg2, op2) "OR %c, %0, LO(%1)\nOR HI(%c), HI(%0), HI(%1)\n"
 creg2: BXORI2(reg2, op2) "XOR %c, %0, LO(%1)\nXOR HI(%c), HI(%0), HI(%1)\n"
 creg2: BXORU2(reg2, op2) "XOR %c, %0, LO(%1)\nXOR HI(%c), HI(%0), HI(%1)\n"
 
-creg2: BCOMI2(reg2) "MOV %c, NOT %0\nMOV %ch, NOT %0h\n"
-creg2: BCOMU2(reg2) "MOV %c, NOT %0\nMOV %ch, NOT %0h\n"
-creg2: NEGI2(reg2) "RSB %c, %0, 0\nRSC %ch, %0h, 0\n"
+creg2: BCOMI2(reg2) "MOV %c, NOT %0\nMOV HI(%c), NOT HI(%0)\n"
+creg2: BCOMU2(reg2) "MOV %c, NOT %0\nMOV HI(%c), NOT HI(%0)\n"
+creg2: NEGI2(reg2) "RSB %c, %0, 0\nRSC HI(%c), HI(%0), 0\n"
 
 creg: BANDI1(reg, op) "ANDS %c, %0, %1\n"
 creg: BANDU1(reg, op) "ANDS %c, %0, %1\n"
@@ -420,7 +423,7 @@ static void emit2(Node p) {
                     }
                 } else {
                     print("MOV [r15+%d], %s\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
-                    print("MOV [r15+%d], %sh\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
+                    print("MOV [r15+%d], HI(%s)\n", next_arg_offset++, intreg[getregnum(p->x.kids[0])]->x.name);
                 }
             }
             break;
