@@ -4,3 +4,4 @@ miksys_soft/serial_out
 *.bin
 *.packed
 *.usb_packed
+qt_sim/qt_sim.pro.user

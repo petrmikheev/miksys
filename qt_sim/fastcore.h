@@ -11,7 +11,7 @@ public:
     static const size_t CACHE_SIZE = 16384;
     static const size_t PROG_SIZE = 512;
     static const int PU_COUNT = 4;
-    FastCore(MIKSYS* system, char* filename);
+    FastCore(MIKSYS* system, const char* filename);
     void reset();
     void handleNext();
     void update();

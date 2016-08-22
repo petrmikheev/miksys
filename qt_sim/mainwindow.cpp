@@ -5,8 +5,11 @@
 #include <cstdio>
 #include <ctime>
 #include <unistd.h>
+#include <string>
 
-MainWindow::MainWindow(QWidget *parent) :
+using namespace std;
+
+MainWindow::MainWindow(int argc, char** argv, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -14,10 +17,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(this->size());
     miksys = new MIKSYS();
     QObject::connect(ui->display, SIGNAL(addByteToKeyboardQueue(unsigned char)), miksys, SLOT(addByteToKeyboardQueue(unsigned char)));
-    miksys->serial_in = fopen("../miksys_soft/serial_in", "r");
-    miksys->serial_out = fopen("../miksys_soft/serial_out", "w");
+    string dir = QCoreApplication::applicationDirPath().toStdString();
+    string startup = dir + "/../miksys_soft/ustartup/startup.bin";
+    string serial_in = dir + "/../miksys_soft/serial_in";
+    string serial_out = dir + "/../miksys_soft/serial_out";
+    if (argc>1) serial_in = argv[1];
+    miksys->serial_in = fopen(serial_in.c_str(), "r");
+    miksys->serial_out = fopen(serial_out.c_str(), "w");
     ui->display->setMIKSYS(miksys);
-    core = new FastCore(miksys, (char*)"../miksys_soft/ustartup/startup.bin");
+    core = new FastCore(miksys, startup.c_str());
     updateLEDs(miksys->buttonState);
     timerId = -1;
     showInfo();

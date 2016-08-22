@@ -33,7 +33,7 @@ enum opcodes {
     SBC = 0x1e
 };
 
-FastCore::FastCore(MIKSYS* system, char* filename) {
+FastCore::FastCore(MIKSYS* system, const char* filename) {
     this->system = system;
     FILE* p = fopen(filename, "rb");
     if (p) {
