@@ -88,7 +88,7 @@ consts = {
 
 def LO(v):
     if isinstance(v, int):
-        p = struct.pack('i', v)
+        p = struct.pack('I', v)
     elif isinstance(v, float):
         p = struct.pack('f', v)
     else: raise Exception('int or float expected')
@@ -96,7 +96,7 @@ def LO(v):
 
 def HI(v):
     if isinstance(v, int):
-        p = struct.pack('i', v)
+        p = struct.pack('I', v)
     elif isinstance(v, float):
         p = struct.pack('f', v)
     else: raise Exception('int or float expected')
@@ -172,7 +172,9 @@ class Param:
         if s in special_registers.keys():
             self.special = True
             s = special_registers[s]
-        self.reg = parseReg(s)
+        try:
+            self.reg = parseReg(s)
+        except Exception: self.value = parseConst(s)
                 
     def __repr__(self):
         if self.type == 'mem':
@@ -334,7 +336,7 @@ if __name__ == "__main__":
         consts.update(s.links)
     for s in segments:
         p = re.sub(r'(\([^\)]*\))', lambda x: str(parseConst(x.group(1))), s.head)
-        if verbose: print 'Segment:', p
+        print 'Segment: %s   size 0x%x' % (p, s.addr)
         p = p.split()
         addr = parseConst(p[1])
         s.offset = parseConst(p[2])
@@ -412,7 +414,11 @@ if __name__ == "__main__":
             cond = conditions[c[cl:cl+2]]
         else:
             cond = conditions['AL']
-        params = [Param(p.strip()) for p in l[len(c):].split(',') if p.strip() != '']
+        try:
+            params = [Param(p.strip()) for p in l[len(c):].split(',') if p.strip() != '']
+        except Exception as e:
+            print l, e
+            exit(1)
         c = c[:cl]
         if flagS and opcode in [opcodes[x] for x in ['NOP', 'J', 'DJ', 'CMOV', 'CCMOV', 'READ', 'CMP', 'TST', 'MUL', 'SHL', 'SHR']]:
             raise Exception('incorrect opcode: ' + l)

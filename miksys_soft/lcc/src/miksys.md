@@ -39,7 +39,7 @@ extern void stabtype(Symbol);
 %term SUBI1=1349 SUBU1=1350 SUBP1=1351 SUBI2=2373 SUBU2=2374
 %term DIVI1=1477 DIVU1=1478
 %term MODI1=1381 MODU1=1382
-%term BANDI1=1413 BANDU1=1414 BANDI2=2137 BANDU2=2138
+%term BANDI1=1413 BANDU1=1414 BANDI2=2437 BANDU2=2438
 %term BORI1=1445 BORU1=1446 BORI2=2469 BORU2=2470
 %term BXORI1=1461 BXORU1=1462 BXORI2=2485 BXORU2=2486
 %term BCOMI1=1429 BCOMU1=1430 BCOMI2=2453 BCOMU2=2454
@@ -309,7 +309,7 @@ stmt: LEU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJLS %a\n"
 stmt: LTI2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJLT %a\n"
 stmt: LTU2(reg2, op2) "CMP HI(%0), HI(%1)\nCMPEQ LO(%0), LO(%1)\nDJCC %a\n"
 
-stmt: creg "# stmt creg" 5
+stmt: reg "# stmt reg" 5
 stmt: creg2 "# stmt creg2" 5
 
 %%
@@ -492,7 +492,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int n) {
 
 static void defsymbol(Symbol p) {
         if (p->scope >= LOCAL && p->sclass == STATIC)
-                p->x.name = stringf("_LC%s.%d", p->name, genlabel(1));
+                p->x.name = stringf("_LS%s_%d", p->name, genlabel(1));
         else if (p->generated)
                 p->x.name = stringf("_LC%s", p->name);
         else if (p->scope == GLOBAL || p->sclass == EXTERN)

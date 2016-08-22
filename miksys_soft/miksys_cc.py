@@ -64,6 +64,7 @@ if outname:
     exit(1)
 
 link_list = []
+elink_list = []
 tmp_list = []
 for t in targets:
     if t[-2:] in ['.c']:
@@ -72,6 +73,9 @@ for t in targets:
         if os.system(command) != 0: exit(1)
     if E_opt: continue
     if t[-2:] in ['.c', '.i']:
+        for l in open(t[:-2]+'.i'):
+            if l.startswith('#pragma link'):
+                elink_list.append(base_dir + '/include/' + l[13:].strip())
         command = '%s/lcc/build/rcc %s -target=miksys %s.i %s.T' % (base_dir, cpp_opts, t[:-2], t[:-2])
         print(command)
         if os.system(command) != 0: exit(1)
@@ -93,7 +97,7 @@ for t in targets:
     else:
         link_list.append('%s.s' % t[:-2])
 if len(link_list) > 0:
-    if addstd: link_list = ['%s/include/std.S' % base_dir] + link_list + ['%s/include/std_end.S' % base_dir]
+    if addstd: link_list = ['%s/include/std.S' % base_dir] + link_list + elink_list + ['%s/include/std_end.S' % base_dir]
     command = '%s/miksys_asm.py %s %s' % (base_dir, ' '.join(link_list), output_file)
     print(command)
     if os.system(command) != 0: exit(1)

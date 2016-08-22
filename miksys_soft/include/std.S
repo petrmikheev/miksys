@@ -55,17 +55,17 @@ _LC4:   INS DEV_PS2_1, r0
 C_putc:
         MOV r0, 0
         MOVS r1, [r15]
-        DJEQ _LC3
+        DJEQ _LC3p
         CMP r1, 1
-        DJEQ _LC4
+        DJEQ _LC4p
         OUTS DEV_SERIAL, [r15+1]
-        MOVMI r0, 1
+        MOVPL r0, 1
         DRET
-_LC3:   OUTS DEV_SERIAL, [r15+1]
-        MOVMI r0, 1
+_LC3p:  OUTS DEV_PS2_0, [r15+1]
+        MOVPL r0, 1
         DRET
-_LC4:   OUTS DEV_SERIAL, [r15+1]
-        MOVMI r0, 1
+_LC4p:  OUTS DEV_PS2_1, [r15+1]
+        MOVPL r0, 1
         DRET
 
 C_sdram_stats:
@@ -83,25 +83,56 @@ C_sdram:
         MOV MEM_ADDR_LO, [r15+3]
         MOV MEM_ADDR_HI, [r15+4]
         MOV r0, [r15+1]
-        MOVS r1, [r15]
+        MOV r1, [r15]
+        TST r1, 1
         READEQ r0, [r15+2]
         WRITENE r0, [r15+2]
         MOV MEM_ADDR_LO, [r15+5]
         MOV MEM_ADDR_HI, [r15+6]
-_LC5:   TST IN_FLAGS, MEM_FLAG
+        TST r1, 2
+_LC5:   TSTNE IN_FLAGS, MEM_FLAG
         DJNE _LC5
         DRET
 
+C_sdram_busy:
+        RET
+            TST IN_FLAGS, MEM_FLAG
+            MOVNE r0, 1
+            MOVEQ r0, 0
+            NOP
+
 C_set_display:
-        DRET
+        MOV r0, [r15]
+        SHR r0, 8
+        MOVS r0, [r15+3]
+        OUT DEV_VGA, SHIFT_RESULT
+        MOV r0, [r15+1]
+        MOV r1, [r15+2]
+        JMI _LC6
+            SHR r0, 8
+            OUT DEV_VGA, r0
+            OUT DEV_VGA, SHIFT_RESULT
+            SHR r1, 8
+        RET
+            OUT DEV_VGA, SHIFT_RESULT
+            OUT DEV_VGA, [r15+3]
+            OUT DEV_VGA, 0
+_LC6:   RETMI
+            OUT DEV_VGA, [r15+2]
+            OUT DEV_VGA, SHIFT_RESULT
+            OUT DEV_VGA, 0x80
+            NOP
 
 C_usb_request:
-        CALL usb_request_func
-            MOV r1, [r15+4]
-            NOP
-            NOP
-            MOV [r15+4], r1
+        MOV r1, [r15+4]
+        MOV [r15+5], MEM_ADDR_LO
+        MOV [r15+6], MEM_ADDR_HI
+        MOV r2, [r1]
+        MOV [r15+4], r2
+        DCALL usb_request_func
         MOV r2, [r15+4]
         MOV [r1], r2
         MOV r0, [r15+3]
+        MOV MEM_ADDR_LO, [r15+5]
+        MOV MEM_ADDR_HI, [r15+6]
         DRET
