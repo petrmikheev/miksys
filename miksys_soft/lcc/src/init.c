@@ -148,11 +148,14 @@ static int initfields(Field p, Field q) {
 	for (i = 0; i < n; i++) {
 		Value v;
 		if (IR->little_endian) {
-			v.u = (unsigned char)bits;
-			bits >>= 8;
+			if (byte_size==8)
+			    v.u = (unsigned char)bits;
+			else
+			    v.u = (unsigned short)bits;
+			bits >>= byte_size;
 		} else {	/* a big endian */
 			v.u = (unsigned char)(bits>>(byte_size*(unsignedtype->size - 1)));
-			bits <<= 8;
+			bits <<= byte_size;
 		}
 		(*IR->defconst)(U, unsignedchar->size, v);
 	}
@@ -250,7 +253,7 @@ Type initializer(Type ty, int lev) {
 	}
 	if (isarray(ty))
 		aty = unqual(ty->type);
-	if (isarray(ty) && ischar(aty)) {
+	if (isarray(ty) && ischar(aty) && byte_size==8) {
 		if (t == SCON) {
 			if (ty->size > 0 && ty->size == tsym->type->size - 1)
 				tsym->type = array(chartype, ty->size, 0);

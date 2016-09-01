@@ -97,7 +97,7 @@ for t in targets:
     else:
         link_list.append('%s.s' % t[:-2])
 if len(link_list) > 0:
-    if addstd: link_list = ['%s/include/std.S' % base_dir] + link_list + elink_list + ['%s/include/std_end.S' % base_dir]
+    if addstd: link_list = ['%s/include/std.S' % base_dir] + link_list + list(set(elink_list)) + ['%s/include/std_end.S' % base_dir]
     command = '%s/miksys_asm.py %s %s' % (base_dir, ' '.join(link_list), output_file)
     print(command)
     if os.system(command) != 0: exit(1)

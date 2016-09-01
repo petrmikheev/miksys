@@ -33,7 +33,7 @@
 #define roundup(x,n) (((x)+((n)-1))&(~((n)-1)))
 #define mkop(op,ty) (specific((op) + ttob(ty)))
 
-#define extend(x,ty) ((x)&(1<<(8*(ty)->size-1)) ? (x)|((~0UL)<<(8*(ty)->size-1)) : (x)&ones(8*(ty)->size))
+#define extend(x,ty) ((x)&(1<<((IR == &miksysIR ? 16 : 8)*(ty)->size-1)) ? (x)|((~0UL)<<((IR == &miksysIR ? 16 : 8)*(ty)->size-1)) : (x)&ones((IR == &miksysIR ? 16 : 8)*(ty)->size))
 #define ones(n) ((n)>=8*sizeof (unsigned long) ? ~0UL : ~((~0UL)<<(n)))
 
 #define isqual(t)     ((t)->op >= CONST)
@@ -60,9 +60,9 @@
 #define isenum(t)     (unqual(t)->op == ENUM)
 #define fieldsize(p)  (p)->bitsize
 #define fieldright(p) ((p)->lsb - 1)
-#define fieldleft(p)  (8*(p)->type->size - \
+#define fieldleft(p)  ((IR == &miksysIR ? 16 : 8)*(p)->type->size - \
                         fieldsize(p) - fieldright(p))
-#define fieldmask(p)  (~(fieldsize(p) < 8*unsignedtype->size ? ~0u<<fieldsize(p) : 0u))
+#define fieldmask(p)  (~(fieldsize(p) < (IR == &miksysIR ? 16 : 8)*unsignedtype->size ? ~0u<<fieldsize(p) : 0u))
 typedef struct node *Node;
 
 typedef struct list *List;
@@ -597,4 +597,5 @@ extern Type qual(int, Type);
 extern void rmtypes(int);
 extern int ttob(Type);
 extern int variadic(Type);
+extern Interface miksysIR;
 

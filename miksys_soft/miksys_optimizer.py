@@ -39,9 +39,12 @@ class Command:
         if '[' in self.wr_reg: self.wr_reg = ''
     def __str__(self):
         if self.is_link: return self.text
-        c = self.opcode + self.cond
+        if self.opcode == 'NOP':
+            c = 'NOP'
+        else:
+            c = self.opcode + self.cond
         if self.flagS and (self.opcode not in ['CMP', 'TST']): c += 'S'
-        return (c + ' ' + ', '.join(self.params)).strip()
+        return '        ' + (c + ' ' + ', '.join(self.params)).strip()
 
 if len(sys.argv) != 3:
     print('Using: miksys_optimizer in.ss out.s')
@@ -90,6 +93,10 @@ def cnst_short(s):
 
 fout = open(sys.argv[2], 'w')
 def handle(code):
+    global idents
+    for i in range(len(code)-1, -1, -1):
+        l = code[i]
+        if l.is_link and l.link != '__' and l.link.startswith('_') and l.link not in idents: del code[i]
     for j in range(3):
         aregs = ['','']
         for i in range(len(code)-1, 0, -1):
@@ -180,7 +187,7 @@ def handle(code):
                     l.params[-1] = l.params[-1].replace('__SWAP__', '__NSWAP__')
                 else:
                     l.params[-1] = l.params[-1].replace('__SWAP__', '')
-                    l.params[1], l.params[2] = l.params[2], l.params[1]
+                    l.params[-2], l.params[-1] = l.params[-1], l.params[-2]
                     if l.opcode == 'SUB': l.opcode = 'RSB'
                     elif l.opcode == 'SBC': l.opcode = 'RSC'
                     elif l.opcode == 'CMP' and i < len(code)-1:
@@ -226,8 +233,13 @@ def handle(code):
 
 code = []
 in_code = False
-
-for l in open(sys.argv[1]).readlines():
+idents = set()
+lines = open(sys.argv[1]).readlines()
+for l in lines:
+    if ':' in l: continue
+    for x in re.findall('\w+', l):
+        idents.add(x)
+for l in lines:
     l = l.strip()
     if l == '' or l[:1] == '#': continue
     if not in_code:

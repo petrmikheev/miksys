@@ -154,9 +154,8 @@ ccmov_addr2: ADDU1(reg, cnst7) "__ADDR__%0+%1"
 ccmov_addr2: ADDP1(reg, cnst7) "__ADDR__%0+%1"
 ccmov_addr2: ADDRLP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
 ccmov_addr2: ADDRFP1 "_rr+%a" a->syms[0]->u.c.v.u<7 ? 0 : LBURG_MAX
-vregp: VREGP "%a"
-ccmov_addr: INDIRP1(vregp) "__ADDR__%0+0"
-ccmov_addr2: INDIRP1(vregp) "__ADDR__%0+0"
+ccmov_addr: reg "__ADDR__%0+0"
+ccmov_addr2: reg "__ADDR__%0+0"
 
 op: cnst_short "%0"
 op: INDIRI1(addr) "[%0]"
@@ -194,9 +193,9 @@ creg2: CVUI2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
 creg2: CVIU2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
 creg2: CVUU2(reg) "MOV %c, %0\nMOV HI(%c), 0\n"
 
-reg: DIVI1(creg, creg) "XOR r4, r0, r1\nCALL divide_func\nCMP r0, 0\nRSBMI r0, r0, 0\nCMP r1, 0\nRSBMI r1, r1, 0\n__:\nCMP r4, 0\nRSBMI r1, r1, 0\n"
+reg: DIVI1(creg, creg) "XOR r4, r0, r1\nCALL divide_func\nCMP r0, 0\nRSBLT r0, r0, 0\nCMP r1, 0\nRSBLT r1, r1, 0\n__:\nCMP r4, 0\nRSBLT r1, r1, 0\n"
 reg: DIVU1(creg, creg) "DCALL divide_func\n"
-reg: MODI1(creg, creg) "MOV r4, r0\nCALL divide_func\nCMP r0, 0\nRSBMI r0, r0, 0\nCMP r1, 0\nRSBMI r1, r1, 0\n__:\nCMP r4, 0\nRSBMI r0, r0, 0\n"
+reg: MODI1(creg, creg) "MOV r4, r0\nCALL divide_func\nCMP r0, 0\nRSBLT r0, r0, 0\nCMP r1, 0\nRSBLT r1, r1, 0\n__:\nCMP r4, 0\nRSBLT r0, r0, 0\n"
 reg: MODU1(creg, creg) "DCALL divide_func\n"
 
 creg: ADDRLP1 "ADDS %c, _rr, %a\n"
@@ -219,11 +218,6 @@ creg: LOADU1(reg) "MOVS %c, %0\n" 1
 creg2: LOADI2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
 creg2: LOADU2(reg2) "MOV %c, %0\nMOV HI(%c), HI(%0)\n" 1
 creg: LOADP1(reg) "MOVS %c, %0\n" 1
-creg: LOADI1(creg) "%0"
-creg: LOADU1(creg) "%0"
-creg2: LOADI2(creg2) "%0"
-creg2: LOADU2(creg2) "%0"
-creg: LOADP1(creg) "%0"
 
 creg: ADDI1(reg, op) "ADDS %c, %0, %1\n"
 creg: ADDU1(reg, op) "ADDS %c, %0, %1\n"
@@ -429,7 +423,7 @@ static void emit2(Node p) {
             break;
         case CALL:
             next_arg_offset = 0;
-            print("DCALL %s\n", p->kids[0]->syms[0]->x.name);
+            print("DCALL %s\n__:\n", p->kids[0]->syms[0]->x.name);
             break;
         }
 }
@@ -492,9 +486,9 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int n) {
 
 static void defsymbol(Symbol p) {
         if (p->scope >= LOCAL && p->sclass == STATIC)
-                p->x.name = stringf("_LS%s_%d", p->name, genlabel(1));
-        else if (p->generated)
-                p->x.name = stringf("_LC%s", p->name);
+                p->x.name = stringf("_LS_%s_%d", p->name, genlabel(1));
+        else if (p->generated || (p->scope == GLOBAL && p->sclass == STATIC))
+                p->x.name = stringf("_LC_%s", p->name);
         else if (p->scope == GLOBAL || p->sclass == EXTERN)
                 p->x.name = stringf("C_%s", p->name);
         else
@@ -525,9 +519,9 @@ static void segment(int n) {
 
 static void defconst(int suffix, int size, Value v) {
         if ((suffix == I || suffix == U || suffix == P) && size == 1)
-                print(".const %d\n", v.u);
+                print(".const %u\n", v.u);
         else if ((suffix == I || suffix == U) && size == 2)
-                print(".const LO(%d), HI(%d)\n", v.u);
+                print(".const LO(%u), HI(%u)\n", v.u);
         else if (suffix == F && size == 2) {
                 float f = v.d;
                 unsigned short* s = (unsigned short*)&f;

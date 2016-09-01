@@ -2,6 +2,7 @@
 #include <float.h>
 
 static char rcsid[] = "$Id$";
+extern Interface miksysIR;
 
 #define foldcnst(TYPE,VAR,OP) \
 	if (l->op == CNST+TYPE && r->op == CNST+TYPE) \
@@ -42,7 +43,7 @@ static char rcsid[] = "$Id$";
 #define ufoldcnst(TYPE,EXP) if (l->op == CNST+TYPE) return EXP
 #define sfoldcnst(OP) \
 	if (l->op == CNST+U && r->op == CNST+I \
-	&& r->u.v.i >= 0 && r->u.v.i < 8*l->type->size) \
+	&& r->u.v.i >= 0 && r->u.v.i < (IR == &miksysIR ? 16 : 8)*l->type->size) \
 		return cnsttree(ty, (unsigned long)(l->u.v.u OP r->u.v.i))
 #define geu(L,R,V) \
 	if (R->op == CNST+U && R->u.v.u == 0) do { \
@@ -204,7 +205,7 @@ int intexpr(int tok, int n) {
 	needconst--;
 	return n;
 }
-extern Interface miksysIR;
+
 Tree simplify(int op, Type ty, Tree l, Tree r) {
 	int n;
 	Tree p;
@@ -450,7 +451,7 @@ Tree simplify(int op, Type ty, Tree l, Tree r) {
 		case LSH+I:
 			identity(r,l,I,i,0);
 			if (l->op == CNST+I && r->op == CNST+I
-			&& r->u.v.i >= 0 && r->u.v.i < 8*l->type->size
+			&& r->u.v.i >= 0 && r->u.v.i < byte_size*l->type->size
 			&& muli(l->u.v.i, 1<<r->u.v.i, ty->u.sym->u.limits.min.i, ty->u.sym->u.limits.max.i, needconst))
 				return cnsttree(ty, (long)(l->u.v.i<<r->u.v.i));
 			if (r->op == CNST+I && (r->u.v.i >= byte_size*ty->size || r->u.v.i < 0)) {
@@ -542,10 +543,10 @@ Tree simplify(int op, Type ty, Tree l, Tree r) {
 		case RSH+I:
 			identity(r,l,I,i,0);
 			if (l->op == CNST+I && r->op == CNST+I
-			&& r->u.v.i >= 0 && r->u.v.i < 8*l->type->size) {
+			&& r->u.v.i >= 0 && r->u.v.i < byte_size*l->type->size) {
 				long n = l->u.v.i>>r->u.v.i;
 				if (l->u.v.i < 0)
-					n |= ~0UL<<(8*l->type->size - r->u.v.i);
+					n |= ~0UL<<(byte_size*l->type->size - r->u.v.i);
 				return cnsttree(ty, n);
 			}
 			if (r->op == CNST+I && (r->u.v.i >= byte_size*ty->size || r->u.v.i < 0)) {
