@@ -45,9 +45,11 @@ void* num2str(void* buf, unsigned num, unsigned base, unsigned color);
 #define TEXT_BLUE 0x300
 #define PIXEL_RGB(r, g, b) (((unsigned)(r)<<8)&0xf800 | ((unsigned)(g)<<3)&0x07c0 | ((unsigned)(b)>>3)&0x1f)
 #define TEXT_RGB(r, g, b) (((r)<<8)&0xe000 | ((g)<<5)&0x1c00 | ((b)<<2)&0x300)
-#define ENABLE_FORMATTING 0
-#define DISABLE_FORMATTING 1
+#define ENABLE_FORMATTING 0 /* подстановка %. и замена '\n' нужным количеством '\0' (выравнивание по 128) */
+#define DISABLE_FORMATTING 1 /* без форматирования */
+#define NUM_FORMATTING 2 /* подстановка %. */
 /* Форматирование текста.
+    %% -> %
     %d -> десятичное со знаком
     %u -> десятичное без знака
     %b -> двоичное
@@ -77,6 +79,7 @@ addr = USB_ADDR(device, endpoint) | REQUEST_TYPE
 Возвращаемое значение: 0 - fail, 1 - success
 В data_out[0] записывается количество байтов для записи, в data_out[1] - первое слово (2 байта) и т.д.
 */
-int usb_request(unsigned addr, void* data_out, void* data_in, unsigned size_in, unsigned *parity);
+int usb_request(unsigned addr, void* data_out, void* data_in, unsigned size_in);
+int usb_reset();
 
 #endif

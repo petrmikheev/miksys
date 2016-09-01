@@ -37,5 +37,5 @@
 * type = 0x4000       : receive data
 * type = 0xa000       : send empty data
 */
-#define usb_request_func 0x0002E0
+#define usb_request_func 0x0002E4
 

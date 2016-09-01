@@ -18,7 +18,6 @@ set_number_base_func:
         MOV [r15+ARGS_COUNT+5], r3
         MOV [r15+4], MEM_ADDR_LO
         MOV [r15+5], MEM_ADDR_HI
-        //MOV [r15+6], r0
         MOV [r15+7], r1
         
         MOV base, [r15+2]
@@ -84,6 +83,7 @@ set_number_base_func_ret_r2389:
 * r0 = смещенный буфер
 * флаг 0x0001 = 0 -> Форматирование включено
 * флаг 0x0001 = 1 -> Форматирование выключено
+* флаг 0x0002     -> Форматирование включено, но '\n' не обрабатывается
 */
 printf_func:
 #define _(x) printf_func_##x
@@ -96,7 +96,6 @@ printf_func:
         MOV [r15+ARGS_COUNT+3], r9
         MOV [r15+ARGS_COUNT+4], r2
         MOV [r15+ARGS_COUNT+5], r3
-//        MOV [r15+ARGS_COUNT+6], r0
         MOV buf, [r15]
         MOV str, [r15+1]
         MOV [r15+ARGS_COUNT], MEM_ADDR_LO
@@ -109,7 +108,6 @@ _(loop):
             MOVEQ [r15], buf
             MOVEQ MEM_ADDR_LO, [r15+ARGS_COUNT]
             MOVEQ MEM_ADDR_HI, [r15+ARGS_COUNT+1]
-            //MOVEQ r0, buf //[r15+ARGS_COUNT+6]
             AND r3, r3, 0xff
         DCALL _(handle_char)
         CALL _(handle_char)
@@ -121,16 +119,18 @@ _(loop):
         DJ _(loop)
 
 _(handle_char):
-        MOVS r8, state
         MOV r8, 1
+        TST r8, state
         JNE _(handle_special)
             CMPEQ r3, '%'
             TSTEQ r8, [r15+2]
             RETEQ
             MOVEQ state, r8
             MOV r8, [r15+2]
-            AND r8, r8, 0xff00
-            CMP r3, '\n'
+            TST r8, 2
+            CMPNE r3, 1
+        CMPEQ r3, '\n'
+        AND r8, r8, 0xff00
         RETNE
             ORHI [buf], r8, r3
             ADDHI buf, buf, 1
@@ -178,7 +178,7 @@ _(handle_special):
             MOV [r15+STACK_FRAME_SIZE+1], r8 // number
             MOV [r15], buf      // buf
         SUB r15, r15, STACK_FRAME_SIZE
-        NOP //MOV buf, [r15]
+        NOP
         NOP
         MOV MEM_ADDR_LO, [r15+ARGS_COUNT+8]
         MOV MEM_ADDR_HI, [r15+ARGS_COUNT+9]

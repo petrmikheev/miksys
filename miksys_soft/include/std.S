@@ -123,16 +123,18 @@ _LC6:   RETMI
             OUT DEV_VGA, 0x80
             NOP
 
+C_usb_reset:
+        OUTS DEV_USB, 0
+        MOVMI r0, 0
+        MOVPL r0, 1
+        DRET
+
 C_usb_request:
-        MOV r1, [r15+4]
-        MOV [r15+5], MEM_ADDR_LO
-        MOV [r15+6], MEM_ADDR_HI
-        MOV r2, [r1]
-        MOV [r15+4], r2
+        MOV [r15+11], MEM_ADDR_LO
+        MOV [r15+12], MEM_ADDR_HI
+        CCMOV [r15+4], 0
         DCALL usb_request_func
-        MOV r2, [r15+4]
-        MOV [r1], r2
         MOV r0, [r15+3]
-        MOV MEM_ADDR_LO, [r15+5]
-        MOV MEM_ADDR_HI, [r15+6]
+        MOV MEM_ADDR_LO, [r15+11]
+        MOV MEM_ADDR_HI, [r15+12]
         DRET
