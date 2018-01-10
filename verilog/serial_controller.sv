@@ -12,16 +12,16 @@ module serial_controller (
       
       initial io_bus.read_odd = 0;
       initial io_bus.write_odd = 0;
-      parameter DIVISOR_WIDTH = SIMULATION ? 4 : 5;
-      parameter DIVISOR = SIMULATION ? 4'd9 : 5'd18;
-      parameter DIVISOR_HALF = SIMULATION ? 4'd2 : 5'd2;
+      parameter DIVISOR_WIDTH = SIMULATION ? 4 : 8; //5;
+      parameter DIVISOR = SIMULATION ? 4'd9 : 8'd234; //5'd18;
+      parameter DIVISOR_HALF = SIMULATION ? 4'd2 : 8'd100; //5'd2;
       
       reg [3:0] read_bit_num = 0;
-	reg [DIVISOR_WIDTH-1:0] read_state = 0;
-	reg [7:0] read_data = 0;
+      reg [DIVISOR_WIDTH-1:0] read_state = 0;
+      reg [7:0] read_data = 0;
       reg [3:0] write_bit_num = 0;
-	reg [DIVISOR_WIDTH-1:0] write_state = 0;
-	reg [7:0] write_data = 0;
+      reg [DIVISOR_WIDTH-1:0] write_state = 0;
+      reg [7:0] write_data = 0;
       
       assign I_FTDI.BD3 = io_bus.try_stop_reading;
       initial I_FTDI.BD1 = 1;

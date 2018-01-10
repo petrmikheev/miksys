@@ -11,7 +11,7 @@ unsigned get_time_ms4();
 unsigned get_clocks();
 
 /* Возвращает состояние кнопки на плате */
-int is_button_pressed();
+unsigned is_button_pressed();
 
 #define PS2_0 0
 #define PS2_1 1
@@ -32,7 +32,7 @@ void sdram_stats(unsigned * work, unsigned * idle);
 /* Обмен данным с микросхемой sdram */
 void sdram(unsigned op, void* buf, unsigned size, unsigned long addr);
 
-int sdram_busy();
+unsigned sdram_busy();
 
 #define NUM2STR_LEFT 0x100
 #define NUM2STR_SIGN 0x200
@@ -79,7 +79,7 @@ addr = USB_ADDR(device, endpoint) | REQUEST_TYPE
 Возвращаемое значение: 0 - fail, 1 - success
 В data_out[0] записывается количество байтов для записи, в data_out[1] - первое слово (2 байта) и т.д.
 */
-int usb_request(unsigned addr, void* data_out, void* data_in, unsigned size_in);
-int usb_reset();
+unsigned usb_request(unsigned addr, void* data_out, void* data_in, unsigned size_in);
+unsigned usb_reset();
 
 #endif
