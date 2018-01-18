@@ -1,6 +1,6 @@
 # miksys
 
-MIKSYS -- это SoC, разработанная для платы Марсоход2 (http://marsohod.org/prodmarsohod2) с ПЛИС Altera Cyclone III.
+MIKSYS -- это SoC, разработанная для платы [Марсоход2](https://marsohod.org/howtostart/marsohod2) с ПЛИС Altera Cyclone III.
 Работа выполнена для получения опыта разработки на verilog. Практической ценности не имеет.
 Была поставлена цель выжать из платы производительность, достаточную для отображения 3д графики.
 
