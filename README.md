@@ -3,6 +3,8 @@
 MIKSYS is an FPGA project for the [Marsohod2](http://marsohod.org/howtostart/prodmarsohod2) development board with Cyclone III.
 It is an education project only and has no practical use.
 
+![](./doc/miksys.png)
+
 The idea was:
 1. To develop all components from scratch without any third-party IP blocks.
 2. To get maximal performance from the development board and illustrate it by realtime 3D graphics.
@@ -28,8 +30,6 @@ Also the project contains:
 The project is finished and no further work is planned on it.
 
 [Documentation (in russian)](./doc/miksys.md)
-
-![](./doc/miksys.png)
 
 ![](./doc/img1.JPG)
 
