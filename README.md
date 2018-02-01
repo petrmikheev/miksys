@@ -1,6 +1,6 @@
 # miksys
 
-MIKSYS is an FPGA project for the [Marsohod2](http://marsohod.org/howtostart/prodmarsohod2) development board with Cyclone III.
+MIKSYS is an FPGA project for the [Marsohod2](http://marsohod.org/howtostart/marsohod2) development board with Cyclone III.
 It is an education project only and has no practical use.
 
 ![](./doc/miksys.png)
